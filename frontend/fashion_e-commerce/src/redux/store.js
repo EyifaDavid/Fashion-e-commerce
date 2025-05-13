@@ -4,10 +4,13 @@ import {apiSlice} from "./slices/apiSlice"
 
 
 const store = configureStore({
-    reduce: {
-        [apiSlice.reducerPath]: apiSlice.reducer
-        auth: authReducer
+    reducer: {
+        [apiSlice.reducerPath]: apiSlice.reducer,
+        auth: authReducer,
     },
     middleware: (getDefaultMiddleware)=> getDefaultMiddleware().concat(apiSlice.middleware),
     devTools:true,
 })
+
+
+export default store
