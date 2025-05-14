@@ -4,17 +4,23 @@ import hero from "../assets/images/hero.jpg";
 import banner1 from "../assets/images/banner1.jpg"
 import banner2 from "../assets/images/banner2.jpg"
 import banner3 from "../assets/images/banner3.jpg"
+import womensPyjama from "../assets/images/pyjama.png"
+import kidPyjama from "../assets/images/kid_pyjama.png"
+import kidHoodie from "../assets/images/kid_hoodie.png"
+import bHoodie from "../assets/images/blue_hoodie.png"
+import pHoodie from "../assets/images/pink.png"
+import gHoodie from "../assets/images/Green.png"
 import Button from "../components/Button";
 import ProductSlider from "../components/ProductSlider";
 
 
 const sampleProducts = [
-  { id: 1, name: "Womens 365 Lightweight Short Pyjama", price: "$25", image: "frontend/fashion_e-commerce/src/assets/images/pyjama.png" },
-  { id: 2, name: "Denim Jacket", price: "$60", image: "frontend/fashion_e-commerce/src/assets/images/blue_hoodie" },
-  { id: 3, name: "Sneakers", price: "$80", image: "frontend/fashion_e-commerce/src/assets/images/kid_pyjama" },
-  { id: 4, name: "Jeans", price: "$50", image: "frontend/fashion_e-commerce/src/assets/images/pink" },
-  { id: 5, name: "Cap", price: "$15", image: "frontend/fashion_e-commerce/src/assets/images/kid_hoodie" },
-  { id: 6, name: "Cap", price: "$15", image: "frontend/fashion_e-commerce/src/assets/images/Green" },
+  { id: 1, name: "Womens 365 Lightweight Short Pyjama", price: "$25", image: womensPyjama , colors: "3"},
+  { id: 2, name: "Denim Jacket", price: "$60", image: kidPyjama , colors: "3" },
+  { id: 3, name: "Sneakers", price: "$80", image: bHoodie , colors: "3" },
+  { id: 4, name: "Jeans", price: "$50", image: pHoodie , colors: "3" },
+  { id: 5, name: "Cap", price: "$15", image: kidHoodie , colors: "3"},
+  { id: 6, name: "Cap", price: "$15", image: gHoodie , colors: "3"},
 ]
 
 

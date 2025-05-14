@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 export default function ProductSlider({ title = "Featured", products = [] }) {
   const scrollRef = useRef(null);
@@ -12,7 +13,7 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
   };
 
   return (
-    <div className="relative px-6 py-10">
+    <div className="relative py-10">
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
 
       {/* Scroll buttons */}
@@ -25,22 +26,31 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
 
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto space-x-4 px-12 scroll-smooth scrollbar-hide"
+        className="flex overflow-x-auto space-x-4 scroll-smooth scrollbar-hide"
       >
         {products.map((product) => (
-          <div
+          <Link
             key={product.id}
-            className="min-w-[200px] bg-white dark:bg-gray-800 shadow-md rounded-lg p-4"
-          >
+            to={`/product/${product.id}`}
+            state={{ product }}
+            className="min-w-[300px] shadow-md rounded-lg p-2 overflow-hidden"
+          ><div className="bg-amber-50">
             <img
               src={product.image}
               alt={product.name}
-              className="h-40 w-full object-cover rounded"
+              className="h-full w-full object-contain rounded"
             />
-            <h3 className="mt-2 font-semibold">{product.name}</h3>
-            <p className="text-gray-500">{product.price}</p>
-          </div>
+            </div>
+
+             <div className="bg-white p-2">
+                 <h3 className="mt-4 font-semibold">{product.name}</h3>
+                 <span className="font-semibold">{product.colors} colors</span>
+            <span className="text-gray-500 px-4">{product.price}</span>
+            </div>
+          </Link>
+          
         ))}
+        
       </div>
 
       <button

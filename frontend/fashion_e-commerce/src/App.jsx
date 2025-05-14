@@ -51,6 +51,7 @@ function App() {
           <Route path="/About" element={<About />} />
         </Route>
         <Route path="/log-in" element={<Login />} />
+        <Route path="/product/:id" element={<ProductList />} />
       </Routes>
 
       <Toaster richColors />
