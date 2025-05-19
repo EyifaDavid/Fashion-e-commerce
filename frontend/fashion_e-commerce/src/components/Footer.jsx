@@ -16,8 +16,8 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">Shop</h3>
           <ul className="space-y-1 text-sm text-gray-400">
-            <li><a href="#">Men</a></li>
-            <li><a href="#">Women</a></li>
+            <li><a href="/Men">Men</a></li>
+            <li><a href="/Women">Women</a></li>
             <li><a href="#">Accessories</a></li>
           </ul>
         </div>

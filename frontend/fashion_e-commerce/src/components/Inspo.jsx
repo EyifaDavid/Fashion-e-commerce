@@ -41,7 +41,7 @@ const Inspo = ({title= "Inspiration",description="", inspos = []}) => {
           <Button
         type="Submit"
         label= "View more"
-        className=" w-[150px] h-14 p-4 bg-blue-700 text-white rounded-full"
+        className=" w-[148px] h-[48px] p-2 bg-[#002fa7] text-white rounded-full"
           />
       </div>
       </div>

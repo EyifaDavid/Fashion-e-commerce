@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import hero from "../assets/images/hero.jpg";
 import banner1 from "../assets/images/banner1.jpg"
 import banner2 from "../assets/images/banner2.jpg"
@@ -78,16 +78,24 @@ const Landing = () => {
    <h1 className="mt-4 text-6xl ">The Gift Guide</h1>
       <p className="mt-2 mb-6 text-sm">Gifts that mean more, for those who mean the most</p>
     <div className="flex flex-row gap-10 w-full justify-center items-center">
+
+   <Link to="/Women">
     <Button
     type="submit"
     label="Shop for her"
-    className="w-full h-15 p-5 bg-blue-700 text-white rounded-full"
+    className="w-[148px] h-[48px] p-5 bg-[#002fa7] text-white rounded-full"
     />
+   </Link>
+   
+   
+
+     <Link to="/Men">
     <Button
     type="submit"
     label="Shop for him"
-    className="w-full h-15 p-5 bg-blue-700 text-white rounded-full"
+    className="w-[148px] h-[48px] p-5 bg-[#002fa7] text-white rounded-full"
     />
+   </Link>
     </div>
    </div>
         </div>
@@ -102,7 +110,7 @@ const Landing = () => {
             <Button
             type="submit"
             label="Shop womens"
-            className="text-black bg-white rounded-full "/>
+            className="text-black bg-white rounded-full w-[148px] h-[48px]"/>
             </div>
           </div>
         </div>
@@ -113,7 +121,7 @@ const Landing = () => {
             <Button
             type="submit"
             label="Shop mens"
-            className="text-black bg-white rounded-full "/>
+            className="text-black bg-white rounded-full w-[148px] h-[48px]"/>
           </div>
         </div>
         <div className="relative w-full">
@@ -123,7 +131,7 @@ const Landing = () => {
             <Button
             type="submit"
             label="Shop now"
-            className="text-black bg-white rounded-full "/>
+            className="text-black bg-white rounded-full w-[148px] h-[48px]"/>
           </div>
         </div>
       </div>
@@ -142,7 +150,7 @@ const Landing = () => {
       <Button
         type="Submit"
         label= "See eligible colors"
-        className="mt-6 w-[200px] h-14 p-4 bg-blue-700 text-white rounded-full"
+        className="mt-6 w-[200px] h-14 p-4 bg-[#002fa7] text-white rounded-full"
           />
       </div>
     </div>

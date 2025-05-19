@@ -57,7 +57,7 @@ function App() {
           <Route path="/Women" element={<Women />} />
         </Route>
         <Route path="/log-in" element={<Login />} />
-        <Route path="/product/:id" element={<ProductList />} />
+        <Route path="/product/:id" element={<Catalogue />} />
       </Routes>
 
       <Toaster richColors />

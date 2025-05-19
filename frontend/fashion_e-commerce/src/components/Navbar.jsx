@@ -8,6 +8,7 @@ import {
 import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "../redux/slices/authSlice";
+import UserAvatar from "./UserAvatar";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -25,17 +26,17 @@ const Navbar = () => {
         </div>
 
         {/* Left Nav - desktop only */}
-        <nav className=" text-[10px] hidden md:flex gap-x-5  items-center">
-          <a href="/Women">Women</a>
-          <a href="/Men">Men</a>
-          <a href="#">Kids</a>
-          <a href="#">Our mission</a>
-          <a href="#">Archive</a>
+        <nav className=" text-[10px] hidden md:flex gap-x-5 items-center">
+          <a href="/Women" className="hover:border-b-1">Women</a>
+          <a href="/Men"className="hover:border-b-1">Men</a>
+          <a href="#"className="hover:border-b-1">Kids</a>
+          <a href="#"className="hover:border-b-1">Our mission</a>
+          <a href="#"className="hover:border-b-1">Archive</a>
         </nav>
 
         {/* Center logo */}
         <div className="text-2xl font-bold flex-1 text-center md:text-left md:flex-none">
-          PANGAIA
+          Mavrauder
         </div>
 
         {/* Right content */}
@@ -56,15 +57,17 @@ const Navbar = () => {
           </div>
 
           <div className="flex gap-3">
-            <MdOutlineFlagCircle size={18} />
-            <MdOutlinePerson size={18} />
-            <MdOutlineShoppingBag size={18} />
+            <MdOutlineFlagCircle size={18} className="hover:cursor-pointer"/>
+            <UserAvatar/>
+            {/* <MdOutlinePerson size={18} className="hover:cursor-pointer"/> */}
+            <MdOutlineShoppingBag size={18} className="hover:cursor-pointer"/>
           </div>
         </div>
 
         {/* Search icon for small screens */}
         <div className="md:hidden flex items-center gap-4">
-          <MdOutlineSearch size={24} />
+          <MdOutlineSearch size={18} className="hover:cursor-pointer"/>
+          <MdOutlineShoppingBag size={18} className="hover:cursor-pointer"/>
         </div>
       </div>
 
