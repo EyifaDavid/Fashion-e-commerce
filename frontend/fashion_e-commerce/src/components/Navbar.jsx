@@ -13,10 +13,10 @@ const Navbar = () => {
 
 return (
 <>
-  <div className='flex justify-between items-center bg-white px-4 py-3 sticky z-10 top-0'>
+  <div className='flex justify-between items-center bg-white px-4 py-1.5 sticky z-10 top-0'>
       <nav className=" flex w-auto gap-7 text-lg justify-start align-middle items-center ">
-        <a href="#">Women</a>
-        <a href="#">Men</a>
+        <a href="/Women">Women</a>
+        <a href="/Men">Men</a>
         <a href="#">Kids</a>
         <a href="#">Our mission</a>
         <a href="#">Archive</a>

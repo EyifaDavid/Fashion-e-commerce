@@ -11,7 +11,20 @@ import bHoodie from "../assets/images/blue_hoodie.png"
 import pHoodie from "../assets/images/pink.png"
 import gHoodie from "../assets/images/Green.png"
 import Button from "../components/Button";
+import display1 from "../assets/images/display1.jpg"
+import display2 from "../assets/images/display2.jpg"
+import display3 from "../assets/images/display3.jpg"
+import display4 from "../assets/images/display4.jpg"
+import male1 from "../assets/images/male1.jpg"
+import male2 from "../assets/images/male2.jpg"
+import female1 from "../assets/images/female1.jpg"
+import female2 from "../assets/images/female2.jpg"
+import twos from "../assets/images/two4one.jpg";
 import ProductSlider from "../components/ProductSlider";
+import SimilarProducts from "../components/SimilarProducts";
+import Inspo from "../components/inspo";
+import DisplaySlider from "../components/DisplaySlider";
+import Footer from "../components/Footer";
 
 
 const sampleProducts = [
@@ -21,13 +34,43 @@ const sampleProducts = [
   { id: 4, name: "Jeans", price: "$50", image: pHoodie , colors: "3" },
   { id: 5, name: "Cap", price: "$15", image: kidHoodie , colors: "3"},
   { id: 6, name: "Cap", price: "$15", image: gHoodie , colors: "3"},
-]
+];
 
+const adSamples = [
+  {
+    title: "Get 20% off!",
+    description: "Use code SUMMER20 on your next order.",
+    image: "/ads/sale.jpg",
+  },
+  {
+    title: "Free Shipping",
+    description: "On all orders over $50 this week only.",
+  },
+  {
+    title: "New Arrivals",
+    description: "Shop our latest drops.",
+    image: "/ads/new.jpg",
+  },
+];
 
+const inspoSample = [
+  { id: 1, name: "male1", image: male1 },
+  { id: 2, name: "female1", image: male2 },
+  { id: 3, name: "male2", image: female1 },
+  { id: 4, name: "female2", image: female2 },
+];
+
+const displaySamples = [
+  { id: 1, name: "dispay1", image: display1, description:"A radically minimal tote crafted entirely from MIRIUM@ a 100% bio-based, animal-free leather alternative" },
+  { id: 2, name: "display2", image: display2 },
+  { id: 3, name: "display3", image: display3 },
+  { id: 4, name: "display4", image: display4 },
+];
 
 
 const Landing = () => {
   return <div className="p-6 w-full mx-auto">
+    {/*Hero Section */}
   <div className="relative w-full h-250 flex">
     <img src={hero} className="w-full h-full object-cover rounded-md" />
   <div className=" absolute inset-0 flex flex-col items-center justify-center -bottom-80">
@@ -49,7 +92,7 @@ const Landing = () => {
    </div>
         </div>
         </div>
-
+     {/*Catalogue Section 1 */}
       <div className="flex w-full mx-auto">
         <div className="relative w-full">
         <img src={banner1} className="flex-1 w-full h-full object-cover" />
@@ -82,11 +125,45 @@ const Landing = () => {
           </div>
         </div>
       </div>
-
+    {/*Product Slider Section */}
        <div className="p-6">
       <ProductSlider title=" Most Loved gifts" products={sampleProducts} />
     </div>
- 
+    {/*Best-Offer Section  */}
+    <div className="w-full h-full">
+    <div className="m-4 flex justify-center items-center">
+      <div className="w-[650px] text-center">
+      <h1 className="text-2xl pb-4 font-semibold">Buy two for the price of one</h1>
+      <h2 className=" font-semibold">Choose your set across selected Heavyweight colours and enjoy your two items for the
+        price of one. Treat yourself to the cosiest holiday outfit or give someone you love an
+        unforgettable gift.</h2>
+      <Button
+        type="Submit"
+        label= "See eligible colors"
+        className="mt-6 w-[200px] h-14 p-4 bg-blue-700 text-white rounded-full"
+          />
+      </div>
+    </div>
+
+      <div className="flex justify-between gap-4 mt-10">
+        <div className="w-full ">
+        <img src= {twos} alt="two for one hoodie-set" className="object-contain w-full" />
+        </div>
+        <div className="max-w-2xl">
+           <SimilarProducts products={sampleProducts} ads={adSamples} />
+        </div>
+      </div>
+    </div>
+    {/*Inspiration Section  */}
+    <div>
+      <Inspo inspos={inspoSample}/>
+    </div>
+    {/*On-display Section  */}
+    <div>
+    <DisplaySlider displays={displaySamples} />
+    </div>
+     {/*Footer Section  */}
+
 </div>
 };
 

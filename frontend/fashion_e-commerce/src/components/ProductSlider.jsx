@@ -1,5 +1,7 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import Button from "./Button";
+import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 export default function ProductSlider({ title = "Featured", products = [] }) {
   const scrollRef = useRef(null);
@@ -14,15 +16,19 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
 
   return (
     <div className="relative py-10">
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+        <div className="flex justify-between">
+            <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+            <a href="" className="underline text-sm font-semibold">View all</a>
+        </div>
+      
 
       {/* Scroll buttons */}
-      <button
-        onClick={() => scroll("left")}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white border rounded-full w-10 h-10 shadow-md"
-      >
-        ◀
-      </button>
+    <Button
+      type="submit" 
+      onClick={() => scroll("left")}
+      icon = <MdArrowBack/>
+      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white "
+      />
 
       <div
         ref={scrollRef}
@@ -53,12 +59,12 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
         
       </div>
 
-      <button
-        onClick={() => scroll("right")}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white border rounded-full w-10 h-10 shadow-md"
-      >
-        ▶
-      </button>
+        <Button
+      type="submit" 
+      onClick={() => scroll("right")}
+      icon = <MdArrowForward/>
+      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white "
+      />
     </div>
   );
 }

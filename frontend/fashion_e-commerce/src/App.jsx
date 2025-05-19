@@ -16,6 +16,9 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Catalogue from "./pages/catalogue";
 import About from "./pages/about";
+import Footer from "./components/Footer";
+import Men from "./pages/Men";
+import Women from "./pages/women";
 
 function Layout() {
   const {user}= useSelector((state)=> state.auth)
@@ -27,9 +30,10 @@ function Layout() {
       <div className="flex-1 overflow-y-auto">
         {<Navbar/>}
 
-        <div className="p-4 2xl:px-10">
+        <div className="flex-grow overflow-y-auto p-4 2xl:px-10">
           {<Outlet/>}
         </div>
+            <Footer />
       </div>
     </div>
   ) : (
@@ -49,6 +53,8 @@ function App() {
           <Route path="/Checkout" element={<Checkout />} />
           <Route path="/Catalogue" element={<Catalogue />} />
           <Route path="/About" element={<About />} />
+          <Route path="/Men" element={<Men />} />
+          <Route path="/Women" element={<Women />} />
         </Route>
         <Route path="/log-in" element={<Login />} />
         <Route path="/product/:id" element={<ProductList />} />
@@ -56,6 +62,7 @@ function App() {
 
       <Toaster richColors />
     </main>
+    
   );
 }
 
