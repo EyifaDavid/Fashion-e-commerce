@@ -1,64 +1,87 @@
-import React from "react";
-import { MdOutlineFlagCircle, MdOutlinePerson, MdOutlinePerson2, MdOutlineSearch, MdOutlineShoppingBag, MdOutlineShowChart, MdPerson, MdPerson2, MdShoppingBag, MdShoppingCart } from 'react-icons/md'
-import { IoMdClose, IoMdPerson } from "react-icons/io";
-import { useDispatch,useSelector } from 'react-redux'
-import { setOpenSidebar } from '../redux/slices/authSlice';
-// import UserAvatar from './UserAvatar';
-// import NotificationPanel from './NotificationPanel';
+import React, { useState } from "react";
+import {
+  MdOutlineFlagCircle,
+  MdOutlinePerson,
+  MdOutlineSearch,
+  MdOutlineShoppingBag,
+} from "react-icons/md";
+import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
+import { setOpenSidebar } from "../redux/slices/authSlice";
 
 const Navbar = () => {
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const {user}= useSelector((state)=>state.auth);
-  const dispatch = useDispatch()
+  return (
+    <div className="bg-white sticky top-0 z-10 shadow-sm">
+      <div className="flex justify-between items-center px-4 py-2">
+        {/* Mobile hamburger */}
+        <div className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <HiX size={28} /> : <HiOutlineMenuAlt3 size={28} />}
+          </button>
+        </div>
 
-return (
-<>
-  <div className='flex justify-between items-center bg-white px-4 py-1.5 sticky z-10 top-0'>
-      <nav className=" flex w-auto gap-7 text-lg justify-start align-middle items-center ">
-        <a href="/Women">Women</a>
-        <a href="/Men">Men</a>
-        <a href="#">Kids</a>
-        <a href="#">Our mission</a>
-        <a href="#">Archive</a>
-       </nav>
+        {/* Left Nav - desktop only */}
+        <nav className=" text-[10px] hidden md:flex gap-x-5  items-center">
+          <a href="/Women">Women</a>
+          <a href="/Men">Men</a>
+          <a href="#">Kids</a>
+          <a href="#">Our mission</a>
+          <a href="#">Archive</a>
+        </nav>
 
-       <div className=" flex align-middle justify-center items-center" >
-       <p className="text-3xl font-bold">PANGAIA</p>
-       </div>
+        {/* Center logo */}
+        <div className="text-2xl font-bold flex-1 text-center md:text-left md:flex-none">
+          PANGAIA
+        </div>
 
-      <div className='flex gap-4'>
-          {/* <button 
-          onClick={()=>dispatch(setOpenSidebar(true))}
-          className='text-2xl text-gray-500 block md:hidden'>
-              ☰
-          </button> */}
-          <div className=" flex justify-center align-middle items-center gap-5 ">
-            <a href="#">Gifts</a>
-            <a className="text-blue-500" href="#">Inner Circle</a>
+        {/* Right content */}
+        <div className="hidden md:flex items-center gap-4">
+          <div className="text-[10px] flex items-center gap-4">
+            <a href="#" className="hidden" >Gifts</a>
+            <a href="#" className=" text-blue-500">Inner Circle</a>
           </div>
 
-          <div className='w-40 2x1:w-[350px] flex items-center py-2 px-2 gap-2 rounded-full bg-[#f3f4f6]'>
-              <MdOutlineSearch className='text-black text-xl'/>
-              <input type="text"
-              placeholder='Search'
-              className='flex-auto w-20 outline-none bg-transparent placeholder:text-gray-500' />
+          {/* Search bar for desktop */}
+          <div className="w-40 flex items-center px-2 py-1 gap-1 rounded-full bg-gray-100">
+            <MdOutlineSearch className="text-black text-lg" />
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full bg-transparent outline-none placeholder:text-gray-500 text-sm"
+            />
           </div>
 
-          <div className="flex gap-6">
-            <MdOutlineFlagCircle size={30}/>
-            <MdOutlinePerson size={30}/>
-            <MdOutlineShoppingBag size={30}/>
+          <div className="flex gap-3">
+            <MdOutlineFlagCircle size={18} />
+            <MdOutlinePerson size={18} />
+            <MdOutlineShoppingBag size={18} />
           </div>
+        </div>
+
+        {/* Search icon for small screens */}
+        <div className="md:hidden flex items-center gap-4">
+          <MdOutlineSearch size={24} />
+        </div>
       </div>
 
-      {/* <div className='flex gap-2 items-center'>
-         <NotificationPanel/>
-
-         <UserAvatar/>
-      </div> */}
-  </div>
-  </>
-)
-}
+      {/* Mobile dropdown menu */}
+      {menuOpen && (
+        <div className="md:hidden px-4 pb-3 pt-2 space-y-3 bg-white shadow">
+          <a href="/Women" className="block">Women</a>
+          <a href="/Men" className="block">Men</a>
+          <a href="#">Kids</a>
+          <a href="#">Our mission</a>
+          <a href="#">Archive</a>
+          <a href="#">Gifts</a>
+          <a className="text-blue-500" href="#">Inner Circle</a>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Navbar;

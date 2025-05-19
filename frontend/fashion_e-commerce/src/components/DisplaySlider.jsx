@@ -22,7 +22,7 @@ export default function DisplaySlider({ displays = [] }) {
       type="submit" 
       onClick={() => scroll("left")}
       icon = <MdArrowBack/>
-      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white "
+      className="absolute left-2 top-1/2 -translate-y-1/2 z-5 w-10 h-10 rounded-full border bg-white "
       />
 
       <div
@@ -65,7 +65,7 @@ export default function DisplaySlider({ displays = [] }) {
       type="submit" 
       onClick={() => scroll("right")}
       icon = <MdArrowForward/>
-      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white "
+      className="absolute right-2 top-1/2 -translate-y-1/2 z-5 w-10 h-10 rounded-full border bg-white "
       />
     </div>
   );

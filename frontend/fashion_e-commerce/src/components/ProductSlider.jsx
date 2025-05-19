@@ -17,7 +17,7 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
   return (
     <div className="relative py-10">
         <div className="flex justify-between">
-            <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+            <h2 className="text-base md:text-sm sm:text-xs font-semibold mb-4">{title}</h2>
             <a href="" className="underline text-sm font-semibold">View all</a>
         </div>
       
@@ -27,7 +27,7 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
       type="submit" 
       onClick={() => scroll("left")}
       icon = <MdArrowBack/>
-      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white "
+      className="absolute left-2 top-1/2 -translate-y-1/2 z-5 w-10 h-10 rounded-full border bg-white "
       />
 
       <div
@@ -63,7 +63,7 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
       type="submit" 
       onClick={() => scroll("right")}
       icon = <MdArrowForward/>
-      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white "
+      className="absolute right-2 top-1/2 -translate-y-1/2 z-5 w-10 h-10 rounded-full border bg-white "
       />
     </div>
   );

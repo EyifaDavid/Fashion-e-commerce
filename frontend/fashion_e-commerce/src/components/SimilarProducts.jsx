@@ -16,7 +16,7 @@ export default function SimilarProducts({ products = [], ads = [] }) {
   }
 
   return (
-    <section className=" ">
+    <section className="flex flex-col md:flex-row ">
 
       {/* Grid layout: 1 column on mobile, 2 on small, 3+ on larger screens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">

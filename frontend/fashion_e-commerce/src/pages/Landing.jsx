@@ -93,21 +93,23 @@ const Landing = () => {
         </div>
         </div>
      {/*Catalogue Section 1 */}
-      <div className="flex w-full mx-auto">
+      <div className="flex flex-col md:flex-row w-full mx-auto">
         <div className="relative w-full">
         <img src={banner1} className="flex-1 w-full h-full object-cover" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center -bottom-100">
-            <p className="text-white font-bold text-lg p-5">Recycled Cashmere</p>
+          <div className=" absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center">
+            <div className="min-w-5xl text-center">
+             <p className="text-white font-bold text-lg pb-3">Recycled Cashmere</p>
             <Button
             type="submit"
             label="Shop womens"
             className="text-black bg-white rounded-full "/>
+            </div>
           </div>
         </div>
         <div className="relative w-full">
         <img src={banner2} className="flex-1 w-full h-full object-cover" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center -bottom-100">
-          <p className="text-white font-bold text-lg p-5">Coats & Jackets</p>
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center ">
+          <p className="text-white font-bold text-lg pb-3 ">Coats & Jackets</p>
             <Button
             type="submit"
             label="Shop mens"
@@ -116,8 +118,8 @@ const Landing = () => {
         </div>
         <div className="relative w-full">
         <img src={banner3} className="flex-1 w-full h-full object-cover" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center -bottom-100">
-          <p className="text-white font-bold text-lg p-5">Organic Cotton hoodie</p>
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center ">
+          <p className="text-white font-bold text-lg p-3">Organic Cotton hoodie</p>
             <Button
             type="submit"
             label="Shop now"
@@ -145,7 +147,7 @@ const Landing = () => {
       </div>
     </div>
 
-      <div className="flex justify-between gap-4 mt-10">
+      <div className="flex flex-col md:flex-row justify-between gap-4 mt-10">
         <div className="w-full ">
         <img src= {twos} alt="two for one hoodie-set" className="object-contain w-full" />
         </div>
