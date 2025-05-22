@@ -28,12 +28,12 @@ import Footer from "../components/Footer";
 
 
 const sampleProducts = [
-  { id: 1, name: "Womens 365 Lightweight Short Pyjama", price: "$25", image: womensPyjama , colors: "3"},
-  { id: 2, name: "Denim Jacket", price: "$60", image: kidPyjama , colors: "3" },
-  { id: 3, name: "Sneakers", price: "$80", image: bHoodie , colors: "3" },
-  { id: 4, name: "Jeans", price: "$50", image: pHoodie , colors: "3" },
-  { id: 5, name: "Cap", price: "$15", image: kidHoodie , colors: "3"},
-  { id: 6, name: "Cap", price: "$15", image: gHoodie , colors: "3"},
+  { id: 1, name: "Womens 365 Lightweight Short Pyjama", price: "$25", image: womensPyjama , noColors: "3", colors: ['#000000', '#ffffff', '#be123c'], countInStock: 5,},
+  { id: 2, name: "Denim Jacket", price: "$60", image: kidPyjama ,  noColors: "3", colors: ['#000000', '#ffffff', '#be123c'],countInStock: 5, },
+  { id: 3, name: "Sneakers", price: "$80", image: bHoodie ,  noColors: "3", colors: ['#000000', '#ffffff', '#be123c'] ,countInStock: 5,},
+  { id: 4, name: "Jeans", price: "$50", image: pHoodie ,  noColors: "3", colors: ['#000000', '#ffffff', '#be123c'],countInStock: 5, },
+  { id: 5, name: "Cap", price: "$15", image: kidHoodie ,  noColors: "3", colors: ['#000000', '#ffffff', '#be123c'],countInStock: 5,},
+  { id: 6, name: "Cap", price: "$15", image: gHoodie ,  noColors: "3", colors: ['#000000', '#ffffff', '#be123c'],countInStock: 5,},
 ];
 
 const adSamples = [

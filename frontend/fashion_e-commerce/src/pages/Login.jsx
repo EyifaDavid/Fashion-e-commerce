@@ -24,7 +24,7 @@ const Login = () => {
     user && navigate ("/Landing")
   },[user])
 
-  return <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6]">
+  return <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#F5F5F5]">
   
     <div className='w-full md:1/3 p-4 md:p-1 flex flex-col justify-center items-center gap-4'>
           <div className="w-full gap-0.5 flex flex-row justify-center items-center">

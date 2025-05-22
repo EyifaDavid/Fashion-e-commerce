@@ -19,6 +19,10 @@ import About from "./pages/about";
 import Footer from "./components/Footer";
 import Men from "./pages/Men";
 import Women from "./pages/women";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProductManagement from "./pages/admin/AdminProducts";
+import AdminRoute from "./routes/AdminRoute";
+import Dashboard from "./pages/admin/Dashboard";
 
 function Layout() {
   const {user}= useSelector((state)=> state.auth)
@@ -26,14 +30,16 @@ function Layout() {
   const location = useLocation();
 
   return user ? (
-    <div className="w-full h-screen flex flex-col md:flex-row">
+    <div className="w-full min-h-screen flex flex-col md:flex-row">
       <div className="flex-1 overflow-y-auto">
         {<Navbar/>}
 
         <div className="flex-grow overflow-y-auto p-4 2xl:px-10">
           {<Outlet/>}
         </div>
-            <Footer />
+        <div>
+          <Footer />
+        </div>
       </div>
     </div>
   ) : (
@@ -52,12 +58,26 @@ function App() {
           <Route path="/Cart" element={<Cart />} />
           <Route path="/Checkout" element={<Checkout />} />
           <Route path="/Catalogue" element={<Catalogue />} />
+          <Route path="/product/:id" element={<Catalogue />} />
           <Route path="/About" element={<About />} />
           <Route path="/Men" element={<Men />} />
           <Route path="/Women" element={<Women />} />
         </Route>
+        {/* <Route path="/admin/*" element={user?.isAdmin ? <AdminDashboard /> : <Navigate to="/" />} /> */}
         <Route path="/log-in" element={<Login />} />
         <Route path="/product/:id" element={<Catalogue />} />
+
+
+      <Route path="/admin" element={<AdminRoute />}>
+       <Route element={<AdminDashboard />}>
+        <Route index element={<ProductManagement />} />
+        <Route path="products" element={<ProductManagement />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="inventory" element={<ProductManagement />} />
+        <Route path="orders" element={<ProductManagement />} />
+
+      </Route>
+     </Route>
       </Routes>
 
       <Toaster richColors />

@@ -9,11 +9,16 @@ import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "../redux/slices/authSlice";
 import UserAvatar from "./UserAvatar";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { cartItems } = useSelector((state) => state.cart);
+  const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  
 
   return (
     <div className="bg-white sticky top-0 z-10 shadow-sm">
@@ -60,14 +65,30 @@ const Navbar = () => {
             <MdOutlineFlagCircle size={18} className="hover:cursor-pointer"/>
             <UserAvatar/>
             {/* <MdOutlinePerson size={18} className="hover:cursor-pointer"/> */}
-            <MdOutlineShoppingBag size={18} className="hover:cursor-pointer"/>
+              <Link to= "/cart"
+           className="relative">
+            <MdOutlineShoppingBag size={18} />
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {itemCount}
+              </span>
+            )}
+          </Link>
           </div>
         </div>
 
         {/* Search icon for small screens */}
         <div className="md:hidden flex items-center gap-4">
           <MdOutlineSearch size={18} className="hover:cursor-pointer"/>
-          <MdOutlineShoppingBag size={18} className="hover:cursor-pointer"/>
+          <Link to= "/cart"
+           className="relative">
+            <MdOutlineShoppingBag size={18} />
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {itemCount}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
 

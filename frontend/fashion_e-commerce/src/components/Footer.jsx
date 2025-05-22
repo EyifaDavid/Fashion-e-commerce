@@ -1,7 +1,7 @@
 // components/Footer.jsx
 export default function Footer() {
   return (
-    <footer className="bg-black text-gray-100 py-10 px-6">
+    <footer className="bg-black text-gray-100 py-10 px-6 mt-">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
 
         {/* Brand */}

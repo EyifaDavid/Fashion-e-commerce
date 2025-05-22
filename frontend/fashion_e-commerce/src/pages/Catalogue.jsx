@@ -5,7 +5,11 @@ import womensPyjama from "../assets/images/pyjama.png"
 import bHoodie from "../assets/images/blue_hoodie.png"
 import kidPyjama from "../assets/images/kid_pyjama.png"
 import Button from '../components/Button';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../redux/slices/cartSlice';
 import { MdOutlineShoppingBag } from 'react-icons/md';
+
+
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -18,10 +22,28 @@ const ProductDetail = () => {
     images: [womensPyjama, kidPyjama, bHoodie],
     colors: ['#000000', '#ffffff', '#be123c'],
     sizes: ['S', 'M', 'L', 'XL'],
+    countInStock: 5,
+    
   };
  // Track currently displayed main image
-  const [selectedImage, setSelectedImage] = useState(product.images[0]);
+ const [selectedImage, setSelectedImage] = useState(product.images[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  
+
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+  const item = {
+    id,
+    name: product.name,
+    price: product.price,
+    image: selectedImage,
+    countInStock: product.countInStock, 
+  };
+  dispatch(addToCart(item));
+};
+
 
   return (
     <div className="flex flex-col md:flex-row gap-10 p-6">
@@ -78,7 +100,8 @@ const ProductDetail = () => {
           {product.sizes.map((size, idx) => (
             <span
               key={idx}
-              className="border px-4 py-2 rounded cursor-pointer hover:bg-gray-200"
+              onClick={()=> setSelectedSize(size)}
+              className={`border px-4 py-2 rounded cursor-pointer hover:bg-gray-200 ${selectedSize === size ? 'bg-black text-white':'border-transparent'}`}
             >
               {size}
             </span>
@@ -92,10 +115,11 @@ const ProductDetail = () => {
           <Button
           label="Add to Cart"
           className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800"
-          onClick={() => console.log('Added to cart')}
+          onClick={handleAddToCart} 
         />
         <Link to="/cart"
-         className="ml-4 text-black">
+         className="ml-4 text-black"
+         >
           <MdOutlineShoppingBag size={30} className="hover:cursor-pointer"/>
          </Link>
         </div>
