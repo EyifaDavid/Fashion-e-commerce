@@ -21,7 +21,7 @@ const ProductDetail = () => {
     rating: 4.5,
     images: [womensPyjama, kidPyjama, bHoodie],
     colors: ['#000000', '#ffffff', '#be123c'],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['XS','S', 'M', 'L', 'XL'],
     countInStock: 5,
     
   };

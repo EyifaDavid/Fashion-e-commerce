@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import devX from "../assets/images/devx.jpg"
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
+import { setOpenSidebar } from '../redux/slices/authSlice';
 
 
 const linkData =[
@@ -27,6 +28,11 @@ const linkData =[
     Label:"Orders",
     link:"orders",
     icon:<MdShoppingBag/>,
+},
+{
+    Label:"Users",
+    link:"users",
+    icon:<FaUsers/>,
 },
 
 ]
@@ -62,11 +68,12 @@ const Sidebar = () => {
     }
   return (
     <div className=' min-h-full flex flex-col gap-6 p-5  bg-[#F5F5F5]'>
-        <div className='flex gap-1 items-center'>
+
+        <div className='flex items-center  '>
         <img src={devX}
-        className=' p-2 rounded-full w-25'>
+        className=' p-2 rounded-full w-20'>
         </img>
-        <span className='text-2xl font-bold text-black mr-2'>Shop</span>
+        <span className='text-2xl font-bold text-black '>Shop</span>
         </div>
         
         <div className='flex-1 flex-col gap-y-5 py-8'>

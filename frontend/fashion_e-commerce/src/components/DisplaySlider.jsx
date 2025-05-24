@@ -1,34 +1,70 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import {MdArrowBack, MdArrowForward} from "react-icons/md"
  
 export default function DisplaySlider({ displays = [] }) {
   const scrollRef = useRef(null);
+    const [showLeft, setShowLeft] = useState(false);
+    const [showRight, setShowRight] = useState(false);
 
-  const scroll = (direction) => {
-    const { current } = scrollRef;
-    if (current) {
-      const scrollAmount = direction === "left" ? -300 : 300;
-      current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
+    // Scroll left or right
+    const scroll = (direction) => {
+      const { current } = scrollRef;
+      if (current) {
+        const scrollAmount = direction === "left" ? -300 : 300;
+        current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    };
+  
+    // Update visibility of scroll buttons
+    const checkScroll = () => {
+      const el = scrollRef.current;
+      if (!el) return;
+      setShowLeft(el.scrollLeft > 0);
+      setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1); // adjust for rounding errors
+    };
+  
+    useEffect(() => {
+      checkScroll();
+      const el = scrollRef.current;
+      if (!el) return;
+  
+      el.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+  
+      return () => {
+        el.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }, [displays]);
 
   return (
     <div className="relative py-10">
 
       {/* Scroll buttons */}
-      <Button
-      type="submit" 
-      onClick={() => scroll("left")}
-      icon = <MdArrowBack/>
-      className="absolute left-2 top-1/2 -translate-y-1/2 z-5 w-10 h-10 rounded-full border bg-white "
-      />
+  {showLeft && (
+   <Button
+          type="button"
+          onClick={() => scroll("left")}
+          icon={<MdArrowBack />}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white"
+        />
+      )}
 
-      <div
-        ref={scrollRef}
-        className="flex overflow-x-auto space-x-3 scroll-smooth scrollbar-hide"
-      >
+      {showRight && (
+        <Button
+          type="button"
+          onClick={() => scroll("right")}
+          icon={<MdArrowForward />}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border bg-white"
+        />
+      )}
+
+    <div
+  ref={scrollRef}
+  className="flex overflow-x-auto space-x-4 scroll-smooth scrollbar-hide"
+>
         {displays.map((display) => (
           <Link
             key={display.id}

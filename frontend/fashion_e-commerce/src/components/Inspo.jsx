@@ -37,7 +37,7 @@ const Inspo = ({title= "Inspiration",description="", inspos = []}) => {
         ))}
         
       </div>
-      <div className='flex justify-center items-center'>
+      <div className='flex justify-center mt-5 items-center'>
           <Button
         type="Submit"
         label= "View more"

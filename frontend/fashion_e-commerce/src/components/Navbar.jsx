@@ -29,6 +29,7 @@ const Navbar = () => {
             {menuOpen ? <HiX size={28} /> : <HiOutlineMenuAlt3 size={28} />}
           </button>
         </div>
+        
 
         {/* Left Nav - desktop only */}
         <nav className=" text-[10px] hidden md:flex gap-x-5 items-center">
