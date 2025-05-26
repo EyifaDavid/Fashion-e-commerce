@@ -23,6 +23,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProductManagement from "./pages/admin/AdminProducts";
 import AdminRoute from "./routes/AdminRoute";
 import Dashboard from "./pages/admin/Dashboard";
+import AdminInventory from "./pages/admin/AdminInventory";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 function Layout() {
   const {user}= useSelector((state)=> state.auth)
@@ -70,10 +72,11 @@ function App() {
 
       <Route path="/admin" element={<AdminRoute />}>
        <Route element={<AdminDashboard />}>
-        <Route index element={<ProductManagement />} />
+        <Route index element={<Dashboard />} />
         <Route path="products" element={<ProductManagement />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="inventory" element={<ProductManagement />} />
+        <Route path="inventory" element={<AdminInventory />} />
+        <Route path="users" element={<AdminUsers />} />
         <Route path="orders" element={<ProductManagement />} />
 
       </Route>

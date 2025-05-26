@@ -67,7 +67,7 @@ const Sidebar = () => {
         )
     }
   return (
-    <div className=' min-h-full flex flex-col gap-6 p-5  bg-[#F5F5F5]'>
+    <div className=' min-h-full flex flex-col gap-6 p-5 bg-[#F5F5F5]'>
 
         <div className='flex items-center  '>
         <img src={devX}

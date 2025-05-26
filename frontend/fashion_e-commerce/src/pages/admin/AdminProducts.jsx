@@ -12,7 +12,7 @@ const ProductManagement = () => {
     <main>
       <div className=" flex justify-between text-center item-center p-2 mb-4">
       <h1 className="text-xl text-white font-bold mb-4">Add New Product</h1>
-      <div className='flex flex-row gap-4 items-center'>
+      <div className='flex flex-colmd:flex-row gap-4 items-center'>
         <Button
         label="Save Draft"
         type="submit"
