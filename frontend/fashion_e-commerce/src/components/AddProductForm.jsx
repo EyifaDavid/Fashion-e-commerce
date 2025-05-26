@@ -9,6 +9,8 @@ import { Checkbox, Textarea } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { IoAddCircle } from 'react-icons/io5';
 import Button from './Button';
+import availableColors from '../utils/colors';
+import ColorPicker from './ColorPicker';
 
 const AddProductForm = () => {
   const dispatch = useDispatch();
@@ -27,12 +29,47 @@ const AddProductForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addProduct(form));
-    setForm({ name: '', price: '', stock: '', image: '' });
+    const newProduct = {
+    name: form.name,
+    price: form.price,
+    stock: form.stock,
+    images: form.images,
+    colors: selectedColors, // <== ADD THIS
+    noColors: selectedColors.length.toString(),
   };
-    const [selectedSize, setSelectedSize] = useState(form.sizes[2]);
-    const [selectedGender, setSelectedGender] = useState(form.genders[0]);
+  
+    dispatch(addProduct(newProduct));
+    setForm({ name: '', price: '', stock: '', image: '' });
+    setSelectedColors([]);
+  };
+    const [categories, setCategories] = useState(['Clothing', 'Accessories', 'Footwear']);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [newCategory, setNewCategory] = useState('');
+    const [selectedColors, setSelectedColors] = useState([]);
+    const [selectedSizes, setSelectedSizes] = useState([]);
     const [selectedImage, setSelectedImage] = useState(form.images[0]);
+    const [selectedGenders, setSelectedGenders] = useState([]);
+
+    const handleSizeChange = (size) => {
+      setSelectedSizes((prev) =>
+        prev.includes(size)
+          ? prev.filter((s) => s !== size)
+          : [...prev, size]
+      );
+    };
+    const handleGenderChange = (gender) => {
+      setSelectedGenders((prev) =>
+        prev.includes(gender)
+          ? prev.filter((g) => g !== gender)
+          : [...prev, gender]
+      );
+    };
+    const handleAddCategory = () => {
+  if (newCategory && !categories.includes(newCategory)) {
+    setCategories([...categories, newCategory]);
+    setNewCategory('');
+  }
+    };
 
   // const submitHandler = async(data)=>{
   //   console.log("submit")
@@ -42,7 +79,7 @@ const AddProductForm = () => {
     <div className="w-full min-h-screen flex flex-row md:flex-col lg:flex-col">
   <form onSubmit={handleSubmit} className="form-container w-full md:w-auto flex flex-col md:flex-col lg:flex-row justify-between bg-white px-10 pt-10 pb-14">
      {/*left section*/}
-     <div className='w-1/2'>
+     <div className='md:w-1/2'>
     <h1 className='font-semibold mb-2'>General Information</h1>
     <Textbox
     placeholder="Product name"
@@ -64,40 +101,44 @@ const AddProductForm = () => {
           ></textarea>
     </div>
 
-  {/*Size and Gender Selection*/}
-    <div className='flex flex-col md:flex-row gap-4 mt-3'>
-    <div>
-    <h2>Size</h2>
-    <p className='text-xs text-gray-500'>Pick Available Size</p>
-      <div className="flex pt-2 flex-wrap gap-2">
-          {form.sizes.map((size, idx) => (
-            <span
-              key={idx}
-              onClick={()=> setSelectedSize(size)}
-              className={`border px-3 py-2 rounded cursor-pointer hover:bg-blue-200 ${selectedSize === size ? 'bg-[#002fa7] text-white':'border-transparent'}`}
-            >
-              {size}
-            </span>
-          ))}
-        </div>
-    </div>
-
-    <div>
-      <h2>Gender</h2>
-    <p className='text-xs text-gray-500'>Pick Available Gender</p>
-          <div className="flex items-center gap-2">
-          {form.genders.map((gender, index)=>(
-            <span
-            key={index}
-            onClick={()=>setSelectedGender}
-            className={`border px-4 py-2 rounded cursor-pointer hover:bg-gray-200 ${selectedGender === gender ? 'bg-black text-white':'border-transparent'}`}
-
-            />
-          ))}
+       {/*Size and Gender Selection*/}
+      <div className='flex flex-col md:flex-row gap-10 mt-3'>
+      <div>
+      <h2>Size</h2>
+      <p className='text-xs text-gray-500'>Pick Available Size</p>
+        <div className="flex pt-2 flex-wrap gap-2">
+            {form.sizes.map((size, idx) => (
+              <span
+                key={idx}
+                onClick={()=> handleSizeChange(size)}
+                className={`border px-3 py-2 rounded cursor-pointer hover:bg-blue-200 ${selectedSizes.includes(size) ? 'bg-[#002fa7] text-white':'border-transparent'}`}
+              >
+                {size}
+              </span>
+            ))}
           </div>
-    </div>
+      </div>
 
-    </div>
+      <div>
+        <h2>Gender</h2>
+      <p className='text-xs text-gray-500'>Pick Available Gender</p>
+            <div className="flex items-center gap-2 pt-3">
+            {form.genders.map((gender, index)=>(
+            <label key={index} className="flex items-center gap-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedGenders.includes(gender)}
+                onChange={() => handleGenderChange(gender)}
+              />
+              <span className={`px-2 py-1 rounded ${selectedGenders.includes(gender) }`}>
+                {gender}
+              </span>
+            </label>
+            ))}
+            </div>
+      </div>
+
+      </div>
        {/*Pricing and Stock*/}
        <div className='mt-10'>
     <h1 className='font-semibold mb-2'>Pricing And Stock</h1>
@@ -128,11 +169,19 @@ const AddProductForm = () => {
           />
         </div>
        </div>
-     </div>
+        {/*Color Selection*/}
+       <ColorPicker
+        availableColors={availableColors}
+        selectedColors={selectedColors}
+        setSelectedColors={setSelectedColors}
+      />
+       </div>
+
+
       {/*right section*/}
       <div>
               {/*upload img section*/}
-         <div>
+         <div className='md:pt-0 pt-10'>
           <div className=" w-full">
             <h1 className='font-bold pb-4'>Upload Image</h1>
         <img

@@ -6,12 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { toast } from "sonner";
 
-export default function ProductSlider({ title = "Featured", products = [] }) {
+export default function ProductSlider({ title = "Featured",products=[]}) {
   const scrollRef = useRef(null);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
+  // const products = useSelector((state) => state.products.allProducts);
 
   // Scroll left or right
   const scroll = (direction) => {
@@ -101,7 +102,7 @@ export default function ProductSlider({ title = "Featured", products = [] }) {
   {products.map((product) => (
     <div
       key={product.id}
-      className="group relative min-w-[300px] shadow-md rounded-lg p-2 overflow-hidden"
+      className="group relative min-w-[300px] max-w-[300px] shadow-md rounded-lg p-2 overflow-hidden"
     >
       {/* Only image wrapped in Link */}
       <Link

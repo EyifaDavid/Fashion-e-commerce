@@ -89,6 +89,10 @@ const Dashboard = () => {
         <div className='h-full flex flex-1 flex-col justify-between'>
           <p className='text-base text-gray-600'>{label}</p>
           <span className='text-2xl font-semibold'>{count}</span>
+            {/* <span className="text-gray-500 px-4">{new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(product.price)}</span> */}
           <span className='text-sm text-gray-400'>{"last month"}</span>
         </div>
 
