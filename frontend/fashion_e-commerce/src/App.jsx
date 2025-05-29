@@ -59,7 +59,6 @@ function App() {
           <Route path="/ProductList" element={<ProductList />} />
           <Route path="/Cart" element={<Cart />} />
           <Route path="/Checkout" element={<Checkout />} />
-          <Route path="/Catalogue" element={<Catalogue />} />
           <Route path="/product/:id" element={<Catalogue />} />
           <Route path="/About" element={<About />} />
           <Route path="/Men" element={<Men />} />
@@ -67,8 +66,6 @@ function App() {
         </Route>
         {/* <Route path="/admin/*" element={user?.isAdmin ? <AdminDashboard /> : <Navigate to="/" />} /> */}
         <Route path="/log-in" element={<Login />} />
-        <Route path="/product/:id" element={<Catalogue />} />
-
 
       <Route path="/admin" element={<AdminRoute />}>
        <Route element={<AdminDashboard />}>
@@ -81,6 +78,9 @@ function App() {
 
       </Route>
      </Route>
+
+     <Route path="/admin/product/:id" element={<ProductManagement />} />
+
       </Routes>
 
       <Toaster richColors />
