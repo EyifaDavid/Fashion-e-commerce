@@ -5,13 +5,17 @@ import { MdArrowBack, MdArrowForward, MdOutlineShoppingBag } from "react-icons/m
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { toast } from "sonner";
+import { useGetProductsQuery } from "../redux/slices/api/productApiSlice";
 
-export default function ProductSlider({ title = "Featured",products=[]}) {
+export default function ProductSlider({ title = "Featured"}) {
   const scrollRef = useRef(null);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
+  const { data: response, isLoading, error } = useGetProductsQuery();
+  const products = response?.data || [];
+  
   // const products = useSelector((state) => state.products.allProducts);
 
   // Scroll left or right
@@ -47,11 +51,11 @@ export default function ProductSlider({ title = "Featured",products=[]}) {
 
   const handleAddToCart = (product) => {
     const item = {
-      id: product.id,
+      id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      countInStock: product.countInStock,
+      image: product.images?.[0],
+      countInStock: product.stock,
     };
 
     const isInCart = cartItems.find((i) => i.id === item.id);
@@ -69,6 +73,16 @@ export default function ProductSlider({ title = "Featured",products=[]}) {
     dispatch(addToCart(item));
     toast.success("Added to cart");
   };
+
+  if (isLoading) return (
+  <div className="flex items-center justify-center h-screen">
+    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
+  </div>
+);
+
+  if (error) return <p>Error fetching products</p>;
+
+
 
   return (
     <div className="relative py-10">
@@ -99,6 +113,7 @@ export default function ProductSlider({ title = "Featured",products=[]}) {
   ref={scrollRef}
   className="flex overflow-x-auto space-x-4 scroll-smooth scrollbar-hide"
 >
+  
   {products.map((product) => (
     <div
       key={product.id}
@@ -106,12 +121,12 @@ export default function ProductSlider({ title = "Featured",products=[]}) {
     >
       {/* Only image wrapped in Link */}
       <Link
-        to={`/product/${product.id}`}
+        to={`/product/${product._id}`}
         state={{ product }}
         className="block bg-amber-50 rounded-t"
       >
         <img
-          src={product.image}
+          src={product.images?.[0] || "/placeholder.jpg"}
           alt={product.name}
           className="h-full w-full object-contain rounded"
         />

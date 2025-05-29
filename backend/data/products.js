@@ -6,7 +6,7 @@ const products =[
       name: "Blue Hoodie",
       price: 30,
       stock: 10,
-      images: [bHoodie],
+      images: ["/images/bHoodie"],
       category: "Hoodies",
       genders: ["Male", "Female"],
       sizes: ["S", "M", "L"],
@@ -18,7 +18,7 @@ const products =[
       name: "Women’s Pyjama",
       price: 25,
       stock: 8,
-      images: [womensPyjama],
+      images: ["/images/womensPyjama"],
       category: "Pyjamas",
       genders: ["Female"],
       sizes: ["S", "M"],
@@ -30,7 +30,7 @@ const products =[
       name: "Kids Pyjama",
       price: 20,
       stock: 15,
-      images: [kidPyjama],
+      images: ["/images/kidPyjama"],
       category: "Pyjamas",
       genders: ["Male", "Female"],
       sizes: ["XS", "S"],
@@ -39,4 +39,4 @@ const products =[
     },
 ];
 
-module.exports = products;
+export default products

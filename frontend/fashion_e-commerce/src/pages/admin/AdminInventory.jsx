@@ -1,10 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { MdOutlineShoppingBag } from 'react-icons/md';
+import { useDeleteProductMutation, useGetProductsQuery } from '../../redux/slices/api/productApiSlice';
+import { IoEye, IoPencil, IoTrash } from 'react-icons/io5';
+import { FaTrash } from 'react-icons/fa';
+import ConfirmModal from '../../components/confirmModal';
+import { toast } from 'sonner';
 
 const AdminInventory = () => {
-  const products = useSelector((state) => state.products.allProducts || []);
+   const { data: response, isLoading, error, refetch } = useGetProductsQuery();
+   const [showModal, setShowModal] = useState(false);
+     const [productIdToDelete, setProductIdToDelete] = useState(null);
+
+   const [deleteProduct]= useDeleteProductMutation();
+   const products = response?.data || [];
+   
+
+   const handleDelete = async () => {
+      await deleteProduct(productIdToDelete);
+      setShowModal(false);
+      await refetch();
+      toast.success("Deleted successfully")
+    } 
+
+     const handleDeleteClick = (id) => {
+    setProductIdToDelete(id);
+    setShowModal(true);
+  };
+
+    if (isLoading) return (
+  <div className="flex items-center justify-center h-screen">
+    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
+  </div>
+);
+
 
   return (
     <div className="p-0 md:p-6">
@@ -38,7 +68,25 @@ const AdminInventory = () => {
                 <td className="p-3">{item.noColors || '-'}</td>
                 <td className="p-3">{item.sizes?.join(', ') || '-'}</td>
                 <td className="p-3">
-                  <Link to={`/product/${item.id}`} className="text-blue-500 hover:underline">View</Link>
+                  <div className='flex gap-2'>
+                  <Link to={`/product/${item._id}`} className="text-blue-500 "><IoEye/></Link>
+                  <Link to={`/admin/product/${item._id}`} 
+                  state={{product: item}}
+                  className="text-blue-500 hover:underline"><IoPencil/></Link>
+                  <button
+                    onClick={() => handleDeleteClick(item._id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    <IoTrash />
+                  </button>
+                    </div>
+                     {/* Modal */}
+                  <ConfirmModal 
+                    isOpen={showModal} 
+                    onClose={() => setShowModal(false)} 
+                    onConfirm={handleDelete} 
+                    message="Are you sure you want to delete this product?"
+                  />
                 </td>
               </tr>
             )) : (
