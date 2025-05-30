@@ -2,12 +2,15 @@ import bcrypt from 'bcryptjs';
 import mongoose,{Schema, SchemaType} from 'mongoose';
 
 const userSchema = new Schema({
-    name: {type: String, required: true},
-    title: {type: String, required: true},
-    role: {type: String, required: true},
+    name: {type: String,},
+    title: {type: String, },
+    role: {type: String, },
     email: {type: String, required: true, unique: true},
-    password: {type: String, required: true},    
-    isAdmin: {type: Boolean, required: true, default: false},     
+    password: {type: String,},    
+    isAdmin: {type: Boolean, default: false},   
+    isVerified: { type: Boolean, default: false },
+    code: { type: String },
+    codeExpires: { type: Date },  
    
 },
 {timestamps: true}
