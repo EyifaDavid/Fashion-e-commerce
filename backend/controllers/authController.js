@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
-// import { createJWT } from "../utils";
 import User from "../models/user.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { createJWT } from "../utils/index.js";
 
 
 dotenv.config();
@@ -144,12 +143,22 @@ export const verify = async(req,res) => {
       return res.status(400).json({ msg: "Invalid or expired code" });
     }
 
+    createJWT(res,user._id)
+
+    console.log("Cookie set!");
+
     user.isVerified = true;
     user.code = null;
     user.codeExpires = null;
     await user.save();
 
-    res.status(200).json({ msg: "Login successful", user: { id: user._id, email: user.email } });
+    res.status(200).json({ msg: "Login successful", user: {
+       id: user._id, 
+       email: user.email, 
+       isAdmin: user.isAdmin,
+       role: user.role,
+       joinedOn: user.joinedOn ? user.joinedOn.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null,
+      } });
 
   } catch (err) {
     console.error(err);

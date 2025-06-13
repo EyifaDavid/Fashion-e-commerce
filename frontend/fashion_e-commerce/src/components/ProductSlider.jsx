@@ -70,7 +70,7 @@ export default function ProductSlider({ title = "Featured"}) {
       return;
     }
 
-    dispatch(addToCart(item));
+    dispatch(addToCart({productId: item.id, quantity:1}));
     toast.success("Added to cart");
   };
 

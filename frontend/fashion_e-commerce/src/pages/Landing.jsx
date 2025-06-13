@@ -79,7 +79,7 @@ const Landing = () => {
       <p className="mt-2 mb-6 text-sm">Gifts that mean more, for those who mean the most</p>
     <div className="flex flex-row gap-10 w-full justify-center items-center">
 
-   <Link to="/Women">
+   <Link to="/shop/women">
     <Button
     type="submit"
     label="Shop for her"
@@ -89,7 +89,7 @@ const Landing = () => {
    
    
 
-     <Link to="/Men">
+     <Link to="/shop/men">
     <Button
     type="submit"
     label="Shop for him"
@@ -107,10 +107,12 @@ const Landing = () => {
           <div className=" absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center">
             <div className="min-w-5xl text-center">
              <p className="text-white font-bold text-lg pb-3">Recycled Cashmere</p>
+            <Link to="/shop/women">
             <Button
             type="submit"
             label="Shop womens"
             className="text-black bg-white rounded-full w-[148px] h-[48px]"/>
+           </Link>
             </div>
           </div>
         </div>
@@ -118,20 +120,24 @@ const Landing = () => {
         <img src={banner2} className="flex-1 w-full h-full object-cover" />
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center ">
           <p className="text-white font-bold text-lg pb-3 ">Coats & Jackets</p>
+          <Link to="/shop/men">
             <Button
             type="submit"
             label="Shop mens"
             className="text-black bg-white rounded-full w-[148px] h-[48px]"/>
+            </Link>
           </div>
         </div>
         <div className="relative w-full">
         <img src={banner3} className="flex-1 w-full h-full object-cover" />
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center ">
           <p className="text-white font-bold text-lg p-3">Organic Cotton hoodie</p>
+          <Link to="/shop/all">
             <Button
             type="submit"
             label="Shop now"
             className="text-black bg-white rounded-full w-[148px] h-[48px]"/>
+            </Link>
           </div>
         </div>
       </div>
@@ -140,30 +146,7 @@ const Landing = () => {
       <ProductSlider title=" Most Loved gifts" products={sampleProducts} />
     </div>
     {/*Best-Offer Section  */}
-    <div className="w-full h-full">
-    <div className="m-4 flex justify-center items-center">
-      <div className="w-[650px] text-center">
-      <h1 className="text-2xl pb-4 font-semibold">Buy two for the price of one</h1>
-      <h2 className=" font-semibold">Choose your set across selected Heavyweight colours and enjoy your two items for the
-        price of one. Treat yourself to the cosiest holiday outfit or give someone you love an
-        unforgettable gift.</h2>
-      <Button
-        type="Submit"
-        label= "See eligible colors"
-        className="mt-6 w-[200px] h-14 p-4 bg-[#002fa7] text-white rounded-full"
-          />
-      </div>
-    </div>
-
-      <div className="flex flex-col md:flex-row justify-between gap-4 mt-10">
-        <div className="w-full ">
-        <img src= {twos} alt="two for one hoodie-set" className="object-contain w-full" />
-        </div>
-        <div className="max-w-2xl">
-           <SimilarProducts products={sampleProducts} ads={adSamples} />
-        </div>
-      </div>
-    </div>
+      <SimilarProducts products={sampleProducts} ads={adSamples} />
     {/*Inspiration Section  */}
     <div>
       <Inspo inspos={inspoSample}/>

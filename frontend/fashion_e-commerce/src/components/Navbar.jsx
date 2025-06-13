@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {
+  MdAdminPanelSettings,
+  MdDashboard,
   MdOutlineFlagCircle,
   MdOutlinePerson,
   MdOutlineSearch,
@@ -16,7 +18,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
   const { cartItems } = useSelector((state) => state.cart);
-  const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const uniqueItemCount = cartItems.length;
+  
 
   
 
@@ -49,9 +52,15 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-4">
           <div className="text-[10px] flex items-center gap-4">
             <a href="#" className="hidden" >Gifts</a>
+              {/* Conditionally render Admin Link */}
+            {user?.isAdmin && ( 
+          <a href="/admin" className="text-sm font-medium text-blue-500">
+            <MdAdminPanelSettings/>
+          </a>
+              )}
             <a href="#" className=" text-blue-500">Inner Circle</a>
           </div>
-
+           
           {/* Search bar for desktop */}
           <div className="w-40 flex items-center px-2 py-1 gap-1 rounded-full bg-gray-100">
             <MdOutlineSearch className="text-black text-lg" />
@@ -69,9 +78,9 @@ const Navbar = () => {
               <Link to= "/cart"
            className="relative">
             <MdOutlineShoppingBag size={18} />
-            {itemCount > 0 && (
+            {uniqueItemCount > 0 && (
               <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {itemCount}
+                {uniqueItemCount}
               </span>
             )}
           </Link>
@@ -84,11 +93,15 @@ const Navbar = () => {
           <Link to= "/cart"
            className="relative">
             <MdOutlineShoppingBag size={18} />
-            {itemCount > 0 && (
+            {uniqueItemCount > 0 && (
               <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {itemCount}
+                {uniqueItemCount}
               </span>
             )}
+          </Link>
+          <Link to= "/admin"
+           className="relative">
+            <MdAdminPanelSettings size={18} />
           </Link>
         </div>
       </div>

@@ -1,21 +1,64 @@
 import Product from "../models/product.js";
 import cloudinary from '../utils/cloudinary.js';
 
-// GET all products
+// // GET all products
+// export const getAllProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find();
+//     res.set('Cache-Control', 'no-store');
+//     res.status(200).json({
+//       status: true,
+//       message: 'All products fetched successfully.',
+//       data: products,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ status: false, message: error.message });
+//   }
+// };
+
+// GET all products with filtering
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { gender, category } = req.query;
+
+    let filter = {};
+
+      // Map gender values
+    const genderMap = {
+      men: "Male",
+      male: "Male",
+      women: "Female",
+      female: "Female"
+    };
+
+    if (gender) {
+      const mappedGender = genderMap[gender.toLowerCase()];
+      if (mappedGender) {
+        filter.genders = mappedGender; // Direct match, no regex needed
+      }
+    }
+
+    if (category) {
+      filter.category = category.toLowerCase();
+    }
+
+    const products = await Product.find(filter);
     res.set('Cache-Control', 'no-store');
     res.status(200).json({
       status: true,
-      message: 'All products fetched successfully.',
+      message: 'Products fetched successfully.',
       data: products,
+      
     });
   } catch (error) {
+
     console.error(error);
     res.status(400).json({ status: false, message: error.message });
   }
 };
+
+
 
 // GET single product by id
 export const getProductById = async (req, res) => {
@@ -52,6 +95,7 @@ export const addProduct = async (req, res) => {
       images,
       colors,
       sizes,
+      discount,
       genders,
       category,
       noColors,
@@ -71,6 +115,7 @@ export const addProduct = async (req, res) => {
       sizes,
       genders,
       category,
+      discount,
       noColors,
     });
 

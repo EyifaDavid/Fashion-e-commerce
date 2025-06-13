@@ -9,7 +9,7 @@ import {
 import Landing from "./pages/landing";
 import Login from "./pages/Login";
 import { Toaster } from "sonner";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "./components/Navbar";
 import ProductList from "./pages/ProductList";
 import Cart from "./pages/Cart";
@@ -25,6 +25,9 @@ import AdminRoute from "./routes/AdminRoute";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminInventory from "./pages/admin/AdminInventory";
 import AdminUsers from "./pages/admin/AdminUsers";
+import { fetchCart } from "./redux/slices/cartSlice";
+import { useEffect } from "react";
+import CategoryPage from "./pages/Category";
 
 function Layout() {
   const {user}= useSelector((state)=> state.auth)
@@ -50,6 +53,14 @@ function Layout() {
 }
 
 function App() {
+ const dispatch = useDispatch();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+  if (user) {
+    dispatch(fetchCart());
+  }
+  }, [dispatch]);
   return (
     <main className="w-full min-h-screen bg-white">
       <Routes>
@@ -61,8 +72,8 @@ function App() {
           <Route path="/Checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<Catalogue />} />
           <Route path="/About" element={<About />} />
-          <Route path="/Men" element={<Men />} />
-          <Route path="/Women" element={<Women />} />
+          <Route path="/shop" element={<CategoryPage />} />
+          <Route path="/shop/:category" element={<CategoryPage />} />
         </Route>
         {/* <Route path="/admin/*" element={user?.isAdmin ? <AdminDashboard /> : <Navigate to="/" />} /> */}
         <Route path="/log-in" element={<Login />} />
@@ -80,6 +91,9 @@ function App() {
      </Route>
 
      <Route path="/admin/product/:id" element={<ProductManagement />} />
+
+
+
 
       </Routes>
 

@@ -99,8 +99,8 @@ export const logoutUser = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("name title role email isActive");
-
+    const users = await User.find();
+    res.set('Cache-Control', 'no-store');
     res.status(200).json(users);
   } catch (error) {
     console.log(error);

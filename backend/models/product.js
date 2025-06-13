@@ -19,6 +19,8 @@ const productSchema = new Schema({
   stock: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false },
   isTrashed: { type: Boolean, default: false },
+  discount: { type: Number, default: 0 }, // Percentage discount, e.g., 20 for 20% off
+  specialOffer: { type: Boolean, default: false }, // True if on special offer
 
   activities: [
     {
@@ -53,6 +55,6 @@ const productSchema = new Schema({
 { timestamps: true }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.models.Product || mongoose.model("Product", productSchema);;
 
 export default Product;

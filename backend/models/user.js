@@ -4,12 +4,13 @@ import mongoose,{Schema, SchemaType} from 'mongoose';
 const userSchema = new Schema({
     name: {type: String,},
     title: {type: String, },
-    role: {type: String, },
+    role: {type: String, enum:["user","admin"], default: "user"},
     email: {type: String, required: true, unique: true},
     password: {type: String,},    
     isAdmin: {type: Boolean, default: false},   
     isVerified: { type: Boolean, default: false },
     code: { type: String },
+    joinedOn: {type: Date, default: Date.now,},
     codeExpires: { type: Date },  
    
 },

@@ -1,21 +1,36 @@
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { addToCart } from "../redux/slices/cartSlice";
+// import { addToCart } from "../redux/slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "./Button";
+import twos from "../assets/images/two4one.jpg";
 import { MdOutlineShoppingBag } from "react-icons/md";
+import { useGetProductsQuery } from "../redux/slices/api/productApiSlice";
 
-export default function SimilarProducts({ products = [], ads = [] }) {
+export default function SimilarProducts({ ads = [] }) {
+  const {data:response, isLoading ,error}= useGetProductsQuery()
+  const products = response?.data || [];
   const maxAds = ads.slice(0, 3);
     const dispatch = useDispatch();
     const { cartItems } = useSelector((state) => state.cart);
+
+
+ // Filter products with discounts
+  const discountedProducts = products.filter(
+    (product) => product.discount || product.specialOffer
+  );
+
+  // Determine which products to use: discounted or all
+  const productsToDisplay = discountedProducts.length > 0 ? discountedProducts : products;
+
+
 
   // Combine products + up to 3 ads after every 3rd product
   const combined = [];
   let adIndex = 0;
 
-  for (let i = 0; i < products.length; i++) {
-    combined.push({ ...products[i], type: "product" });
+  for (let i = 0; i < productsToDisplay.length; i++) {
+    combined.push({ ...productsToDisplay[i], type: "product" });
     if ((i + 1) % 3 === 0 && adIndex < maxAds.length) {
       combined.push({ ...maxAds[adIndex], type: "ad" });
       adIndex++;
@@ -47,26 +62,54 @@ export default function SimilarProducts({ products = [], ads = [] }) {
     toast.success("Added to cart");
   };
 
+    if (isLoading) return (
+  <div className="flex items-center justify-center h-screen">
+    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
+  </div>
+);
+
+  if (error) return <p>Error fetching products</p>;
 
   return (
-    <section className="flex flex-col md:flex-row ">
+    <div className="w-full h-full">
+    <div className="m-4 flex justify-center items-center">
+      <div className="w-[650px] text-center">
+      <h1 className="text-2xl pb-4 font-semibold">Buy two for the price of one</h1>
+      <h2 className=" font-semibold">Choose your set across selected Heavyweight colours and enjoy your two items for the
+        price of one. Treat yourself to the cosiest holiday outfit or give someone you love an
+        unforgettable gift.</h2>
+      <Button
+        type="Submit"
+        label= "See eligible colors"
+        className="mt-6 w-[200px] h-14 p-4 bg-[#002fa7] text-white rounded-full"
+          />
+      </div>
+    </div>
+
+      <div className="flex flex-col md:flex-row justify-between gap-4 mt-10">
+        <div className="w-auto max-w-1/2 ">
+        <img src= {twos} alt="two for one hoodie-set" className="object-contain w-full" />
+        </div>
+        <div className="w-full"></div>
+
+      <section className="flex flex-col md:flex-row ">
 
       {/* Grid layout: 1 column on mobile, 2 on small, 3+ on larger screens */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-6">
         {combined.map((item, index) =>
           item.type === "product" ? (
           <div
           key={`product-${item.id}`}
-          className="group min-w-[300px] shadow-md rounded-lg p-2 overflow-hidden hover:shadow-lg transition"
+          className="group min-w-[300px] rounded-lg p-2 overflow-hidden hover:shadow-lg inline-block transition-transform transform hover:scale-105 duration-300 relative hover:z-20"
         >
               {/* Image section wrapped in Link */}
               <Link
-                to={`/product/${item.id}`}
+                to={`/product/${item._id}`}
                 state={{ product: item }}
                 className="block bg-amber-50 rounded-t"
               >
                 <img
-                  src={item.image}
+                  src={item.images?.[0] || "/placeholder.jpg"}
                   alt={item.name}
                   className="h-full w-full object-contain rounded-t"
                 />
@@ -131,5 +174,7 @@ export default function SimilarProducts({ products = [], ads = [] }) {
         )}
       </div>
     </section>
+     </div>
+      </div>
   );
 }

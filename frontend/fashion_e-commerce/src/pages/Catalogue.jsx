@@ -5,6 +5,8 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/slices/cartSlice';
 import { MdOutlineShoppingBag } from 'react-icons/md';
 import { useGetProductByIdQuery } from '../redux/slices/api/productApiSlice';
+import { toast } from 'sonner';
+import store from '../redux/store';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -28,7 +30,8 @@ const ProductDetail = () => {
 
     const dispatch = useDispatch();
 
-  const handleAddToCart = () => {
+const handleAddToCart = () => {
+  try {
     if (!product) return;
 
     const item = {
@@ -39,8 +42,15 @@ const ProductDetail = () => {
       countInStock: product.stock,
     };
 
-    dispatch(addToCart(item));
-  };
+    dispatch(addToCart({ productId: item.id, quantity: 1 }));
+    console.log('Cart items:', store.getState().cart.items);
+    toast.success("Added to cart");
+  } catch (error) {
+    console.error("Error in handleAddToCart:", error);
+    toast.error("Failed to add to cart");
+  }
+};
+
 
  if (isLoading) return (
   <div className="flex items-center justify-center h-screen">
@@ -84,6 +94,9 @@ const ProductDetail = () => {
         <div className="flex items-center gap-2 text-yellow-400">
           {'★'.repeat(Math.floor(product.rating || 0))}
           <span className="text-sm text-gray-500">({product.rating || 0})</span>
+        </div>
+        <div>
+          <p>{product.description}</p>
         </div>
 
         <p className="text-xl font-semibold">

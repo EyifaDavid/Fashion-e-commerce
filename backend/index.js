@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import { errorHandler, routeNotFound } from "./middleware/errorMiddleware.js";
 import { apiSlice } from "../frontend/fashion_e-commerce/src/redux/slices/apiSlice.js";
 import routes from "./routes/index.js"
+import Replicate from "replicate";
 
 
 // const express = require('express');
@@ -30,7 +31,7 @@ dbConnection();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
-app.use(cors());
+
 
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
@@ -49,8 +50,83 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
   }
 });
 
+// app.post('/api/tryon', upload.single('productImage'), async (req, res) => {
+//   try {
+//     const productPath = req.file.path;
+
+//     // Upload product image to Cloudinary
+//     const productUpload = await cloudinary.uploader.upload(productPath, { folder: 'tryon-app' });
+//     fs.unlinkSync(productPath);
+
+//     // Use default model image for user
+//     const DEFAULT_USER_IMAGE = 'https://res.cloudinary.com/dpxmdtduf/image/upload/v1748711374/I3GOHIZ7CBBV7NPZC2ROV3AG2Q_rna1bv.jpg'; // Replace with your Cloudinary URL
+
+//     // Call Replicate API (with fetch)
+//     const replicateResponse = await fetch('https://api.replicate.com/v1/predictions', {
+//       method: 'POST',
+//       headers: {
+//         Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         version: '04k579n4phrm80cmebmbnjx2dc',
+//         input: {
+//           image: DEFAULT_USER_IMAGE,
+//           cloth: productUpload.secure_url,
+//         },
+//       }),
+//     });
+
+//     const replicateData = await replicateResponse.json();
+
+//     if (replicateResponse.ok) {
+//       res.json({ generatedImage: replicateData.urls.get });
+//     } else {
+//       console.error(replicateData);
+//       res.status(500).json({ error: 'Replicate API Error' });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Try-on failed' });
+//   }
+// });
+
+// app.post('/tryon', async (req, res) => {
+//   try {
+//     const { productImage, userImage } = req.body;
+
+//     if (!productImage) {
+//       return res.status(400).json({ error: "Product image URL is required" });
+//     }
+
+//     // Use a default user image if none provided
+//     const userImg = userImage || 'https://res.cloudinary.com/dpxmdtduf/image/upload/v1748711374/I3GOHIZ7CBBV7NPZC2ROV3AG2Q_rna1bv.jpg'; // You can upload a default image or let the user upload
+
+//     // The model and version can be replaced by your specific AI try-on model on Replicate
+//     // Example uses subhash25rawat/flux-vton from your earlier message
+
+//     const output = await replicate.run(
+//       "subhash25rawat/flux-vton:a02643ce418c0e12bad371c4adbfaec0dd1cb34b034ef37650ef205f92ad6199",
+//       {
+//         input: {
+//           part: "upper_body", // or adapt based on your product category
+//           image: userImg,
+//           garment: productImage,
+//         }
+//       }
+//     );
+
+//     // output is the URL of the generated try-on image
+//     return res.json({ generatedImage: output });
+
+//   } catch (error) {
+//     console.error("Error generating try-on image:", error);
+//     return res.status(500).json({ error: "Failed to generate try-on image" });
+//   }
+// });
 
 // Middleware
+
 app.use(cors({
     origin: ["http://localhost:4000","http://localhost:4001"],
     methods: ["GET","POST","PUT","DELETE"],
@@ -71,7 +147,6 @@ app.use(routeNotFound)
 app.use(errorHandler)
 
 // Test route
-app.get('/', (req, res) => res.send('API is running...'));
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
   res.set('Pragma', 'no-cache');

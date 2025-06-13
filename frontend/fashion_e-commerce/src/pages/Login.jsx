@@ -6,6 +6,8 @@ import Button from "../components/Button";
 import devX from "../assets/images/devx.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
+import { tokenIsValid } from "../../../../backend/utils/token";
+import Cookies from "js-cookie";
 
 
 const Login = () => {
@@ -26,9 +28,13 @@ const Login = () => {
   } = useForm();
 
   // Redirect if user is already logged in
-  useEffect(() => {
-    if (user) navigate("/Landing");
-  }, [user, navigate]);
+useEffect(() => {
+  const token = Cookies.get("token");
+
+  if (token && tokenIsValid(token)) {
+    navigate("/Landing");
+  }
+}, [navigate]);
 
   // Step 1: Submit email for code
   const handleEmailSubmit = async (data) => {
@@ -39,6 +45,7 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email }),
+        credentials:"include"
       });
       const resData = await response.json();
       if (!response.ok) throw new Error(resData.msg || "Error sending code");
@@ -61,6 +68,7 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: data.code }),
+        credentials:"include"
       });
       const resData = await response.json();
       if (!response.ok) throw new Error(resData.msg || "Invalid code");

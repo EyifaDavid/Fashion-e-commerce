@@ -24,6 +24,7 @@ const AddProductForm = () => {
     description: existingProduct?.description || '',
     price: existingProduct?.price || '',
     stock: existingProduct?.stock || '',
+    discount:existingProduct?.discount || '',
     colors: existingProduct?.colors || [],
     sizes: existingProduct?.sizes || ['XS','S','M','L','XL'],
     category: existingProduct?.category || '',
@@ -41,6 +42,7 @@ const AddProductForm = () => {
   sizes: [],
   genders: [],
   images: [],
+  discount: 0,
 };
 
 const {
@@ -178,6 +180,7 @@ const submitHandler = async (data) => {
         price: product.price,
         description: product.description,
         stock: product.stock,
+        discount:product.discount,
         category: product.category,
         colors: product.colors,
         sizes: product.sizes,
@@ -293,8 +296,10 @@ const submitHandler = async (data) => {
           <Textbox
             label="Discount"
             type="number"
-            value={formData.discount}
-            placeholder="Price"
+            name="discount"
+            register={register("discount",{valueAsNumber:true})}
+            error={errors.discount ? errors.discount.message : ""}
+            placeholder="Discount"
             className="rounded w-full text-sm focus:ring-2 ring-blue-500"
           />
           {/* <Textbox
