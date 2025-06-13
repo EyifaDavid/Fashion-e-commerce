@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 
-const API_URI = import.meta.env.VITE_APP_BASE_URL
+const API_URI = "http://localhost:5000/api"
 
 "http://localhost:5000/api"
 "https://fashion-e-commerce-huig.onrender.com"
