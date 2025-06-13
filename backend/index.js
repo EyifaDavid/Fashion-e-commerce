@@ -31,6 +31,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
 
+app.use(cors({
+    origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
+    methods: ["GET","POST","PUT","DELETE"],
+    credentials:true,
+}));
+
+app.options('*', cors()); // ✅ allow preflight
+
+
 
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
@@ -126,11 +135,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
 // Middleware
 
-app.use(cors({
-    origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
-    methods: ["GET","POST","PUT","DELETE"],
-    credentials:true,
-}));
+
 app.use(express.json());
 app.use(express.urlencoded( {extended:true}));
 app.use(morgan('dev'));

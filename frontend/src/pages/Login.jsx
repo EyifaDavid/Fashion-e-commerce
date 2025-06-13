@@ -41,7 +41,7 @@ useEffect(() => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5500/api/auth/login", {
+      const response = await fetch("https://fashion-e-commerce-huig.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email }),
@@ -64,7 +64,7 @@ useEffect(() => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5500/api/auth/verify", {
+      const response = await fetch("https://fashion-e-commerce-huig.onrender.com/api/auth/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: data.code }),
