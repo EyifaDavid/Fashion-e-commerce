@@ -36,11 +36,12 @@ const Navbar = () => {
 
         {/* Left Nav - desktop only */}
         <nav className=" text-[10px] hidden md:flex gap-x-5 items-center">
-          <a href="/Women" className="hover:border-b-1">Women</a>
-          <a href="/Men"className="hover:border-b-1">Men</a>
-          <a href="#"className="hover:border-b-1">Kids</a>
+          <a href="/" className="hover:border-b-1">Home</a>
+          <a href="/shop/women" className="hover:border-b-1">Women</a>
+          <a href="/shop/men"className="hover:border-b-1">Men</a>
+          {/* <a href="#"className="hover:border-b-1">Kids</a>
           <a href="#"className="hover:border-b-1">Our mission</a>
-          <a href="#"className="hover:border-b-1">Archive</a>
+          <a href="#"className="hover:border-b-1">Archive</a> */}
         </nav>
 
         {/* Center logo */}
