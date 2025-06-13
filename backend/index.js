@@ -37,8 +37,6 @@ app.use(cors({
     credentials:true,
 }));
 
-app.options('*', cors()); // ✅ allow preflight
-
 
 
 app.post('/api/upload', upload.single('image'), async (req, res) => {
