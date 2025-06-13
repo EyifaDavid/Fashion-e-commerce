@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import devX from "../assets/images/devx.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
-import { tokenIsValid } from "../../../../backend/utils/token";
+import { tokenIsValid } from "../../../backend/utils/token";
 import Cookies from "js-cookie";
 
 

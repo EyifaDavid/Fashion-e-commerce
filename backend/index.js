@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 import dbConnection from "./utils/index.js";
 import cookieParser from "cookie-parser";
 import { errorHandler, routeNotFound } from "./middleware/errorMiddleware.js";
-import { apiSlice } from "../frontend/fashion_e-commerce/src/redux/slices/apiSlice.js";
+import { apiSlice } from "../frontend/src/redux/slices/apiSlice.js";
 import routes from "./routes/index.js"
 import Replicate from "replicate";
 
