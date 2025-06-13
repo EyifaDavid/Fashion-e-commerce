@@ -5,7 +5,6 @@ const API_URI = import.meta.env.VITE_APP_BASE_URL || "https://fashion-e-commerce
 const baseQuery = fetchBaseQuery({baseUrl: API_URI + "/api",  credentials:'include'
 })
 
-console.log("API URI is", API_URI);
 
 export const apiSlice = createApi ({
     baseQuery,
