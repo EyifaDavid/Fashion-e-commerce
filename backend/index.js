@@ -128,7 +128,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 // Middleware
 
 app.use(cors({
-    origin: ["http://localhost:4000","http://localhost:4001"],
+    origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
     methods: ["GET","POST","PUT","DELETE"],
     credentials:true,
 }));
