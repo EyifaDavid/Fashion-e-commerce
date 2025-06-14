@@ -37,7 +37,13 @@ app.use(cors({
     credentials:true,
 }));
 
+const corsOptions = {
+  origin: ["https://mavraudercollections.netlify.app"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+};
 
+app.use(cors(corsOptions));
 
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {

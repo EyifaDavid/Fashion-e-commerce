@@ -19,6 +19,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const API = import.meta.env.VITE_API_BASE_URL;
 
   const {
     register,
@@ -41,7 +42,7 @@ useEffect(() => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("https://fashion-e-commerce-huig.onrender.com/api/auth/login", {
+      const response = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email }),
@@ -64,7 +65,7 @@ useEffect(() => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("https://fashion-e-commerce-huig.onrender.com/api/auth/verify", {
+      const response = await fetch(`${API}/auth/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: data.code }),

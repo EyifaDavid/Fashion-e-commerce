@@ -9,10 +9,12 @@ export default function CategoryPage({ handleAddToCart }) {
   const [loading, setLoading] = useState(true);
   const [subCategory, setSubCategory] = useState("All");
 
+
   const subCategories = ["All", "clothing", "footwear", "accessories"];
 
   useEffect(() => {
-    let url = "/api/products";
+    const API = import.meta.env.VITE_API_BASE_URL;
+    let url = `${API}/products`;
     if (category !== "shop") {
       url += `?gender=${category}`;
     }
