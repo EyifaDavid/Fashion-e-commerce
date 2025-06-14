@@ -2,15 +2,46 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import Button from "../components/Button";
+import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/slices/cartSlice";
 
-export default function CategoryPage({ handleAddToCart }) {
+export default function CategoryPage() {
   const { category } = useParams(); // "men", "women", "shop"
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [subCategory, setSubCategory] = useState("All");
+  const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.cart);
 
 
   const subCategories = ["All", "clothing", "footwear", "accessories"];
+
+  const handleAddToCart = (product) => {
+      const item = {
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0],
+        countInStock: product.stock,
+      };
+
+      const isInCart = cartItems.find((i) => i.id === item.id);
+
+      if (item.countInStock === 0) {
+        toast.error("Product is out of stock");
+        return;
+      }
+
+      if (isInCart && isInCart.quantity >= item.countInStock) {
+        toast.error("Not enough stock available");
+        return;
+      }
+
+      dispatch(addToCart({productId: item.id, quantity:1}));
+      toast.success("Added to cart");
+    };
+
 
   useEffect(() => {
     const API = import.meta.env.VITE_API_BASE_URL;

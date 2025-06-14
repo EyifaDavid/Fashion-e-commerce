@@ -6,6 +6,7 @@ import Button from "./Button";
 import twos from "../assets/images/two4one.jpg";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { useGetProductsQuery } from "../redux/slices/api/productApiSlice";
+import { addToCart } from "../redux/slices/cartSlice";
 
 export default function SimilarProducts({ ads = [] }) {
   const {data:response, isLoading ,error}= useGetProductsQuery()
@@ -39,11 +40,11 @@ export default function SimilarProducts({ ads = [] }) {
 
  const handleAddToCart = (product) => {
     const item = {
-      id: product.id,
+      id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      countInStock: product.countInStock,
+      image: product.images?.[0],
+      countInStock: product.stock,
     };
 
     const isInCart = cartItems.find((i) => i.id === item.id);
@@ -58,7 +59,7 @@ export default function SimilarProducts({ ads = [] }) {
       return;
     }
 
-    dispatch(addToCart(item));
+    dispatch(addToCart({ productId: item.id, quantity: 1 }));
     toast.success("Added to cart");
   };
 
@@ -181,3 +182,4 @@ export default function SimilarProducts({ ads = [] }) {
       </div>
   );
 }
+
