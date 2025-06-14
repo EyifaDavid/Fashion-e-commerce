@@ -146,6 +146,7 @@ export const verify = async(req,res) => {
     createJWT(res,user._id)
 
     console.log("Cookie set!");
+    console.log("Cookies received:", req.cookies);
 
     user.isVerified = true;
     user.code = null;
