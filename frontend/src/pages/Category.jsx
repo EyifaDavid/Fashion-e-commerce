@@ -19,6 +19,12 @@ export default function CategoryPage({ handleAddToCart }) {
       url += `?gender=${category}`;
     }
 
+    if (category === "discounts") {
+    url += `?discount=true`; 
+  } else if (category !== "shop") {
+    url += `?gender=${category}`;
+  }
+
     const fetchProducts = async () => {
       try {
         const res = await fetch(url);

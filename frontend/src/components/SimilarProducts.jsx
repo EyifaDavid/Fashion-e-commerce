@@ -78,11 +78,14 @@ export default function SimilarProducts({ ads = [] }) {
       <h2 className=" font-semibold">Choose your set across selected Heavyweight colours and enjoy your two items for the
         price of one. Treat yourself to the cosiest holiday outfit or give someone you love an
         unforgettable gift.</h2>
-      <Button
+        <Link to="/shop/discounts">
+         <Button
         type="Submit"
         label= "See eligible colors"
         className="mt-6 w-[200px] h-14 p-4 bg-[#002fa7] text-white rounded-full"
           />
+       </Link>
+     
       </div>
     </div>
 

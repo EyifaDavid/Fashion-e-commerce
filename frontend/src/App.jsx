@@ -74,6 +74,7 @@ function App() {
           <Route path="/About" element={<About />} />
           <Route path="/shop" element={<CategoryPage />} />
           <Route path="/shop/:category" element={<CategoryPage />} />
+          <Route path="/shop/discounts" element={<CategoryPage />} />
         </Route>
         {/* <Route path="/admin/*" element={user?.isAdmin ? <AdminDashboard /> : <Navigate to="/" />} /> */}
         <Route path="/log-in" element={<Login />} />

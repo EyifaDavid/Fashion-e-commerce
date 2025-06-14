@@ -20,7 +20,7 @@ import cloudinary from '../utils/cloudinary.js';
 // GET all products with filtering
 export const getAllProducts = async (req, res) => {
   try {
-    const { gender, category } = req.query;
+    const { gender, category, discount } = req.query;
 
     let filter = {};
 
@@ -41,6 +41,10 @@ export const getAllProducts = async (req, res) => {
 
     if (category) {
       filter.category = category.toLowerCase();
+    }
+
+     if (discount === "true") {
+      filter.discount = { $gt: 0 };
     }
 
     const products = await Product.find(filter);
