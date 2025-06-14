@@ -104,7 +104,7 @@ const Navbar = () => {
           <a href="/admin" className="text-sm font-medium text-blue-500">
             <MdAdminPanelSettings size={18}/>
           </a> )}
-          <UserAvatar size={18}/>
+          <UserAvatar className="hover:cursor-pointer items-center" />
         </div>
       </div>
 

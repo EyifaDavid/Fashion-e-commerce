@@ -69,9 +69,9 @@ const displaySamples = [
 
 
 const Landing = () => {
-  return <div className="p-6 w-full mx-auto">
+  return <div className="md:p-6 p-4 w-full mx-auto">
     {/*Hero Section */}
-  <div className="relative w-full h-250 flex">
+  <div className="relative h-150 w-full md:h-250 flex">
     <img src={hero} className="w-full h-full object-cover rounded-md" />
   <div className=" absolute inset-0 flex flex-col items-center justify-center -bottom-80">
    <div className="max-w-2xl text-center">

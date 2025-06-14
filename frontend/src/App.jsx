@@ -35,11 +35,11 @@ function Layout() {
   const location = useLocation();
 
   return user ? (
-    <div className="w-full min-h-screen flex flex-col md:flex-row">
+    <div className="w-full min-h-screen flex flex-col md:flex-row ">
       <div className="flex-1 overflow-y-auto">
         {<Navbar/>}
 
-        <div className="flex-grow overflow-y-auto p-4 2xl:px-10">
+        <div className="flex-grow overflow-y-auto md:p-4 2xl:px-10 overflow-x-hidden ">
           {<Outlet/>}
         </div>
         <div>

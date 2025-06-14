@@ -33,10 +33,10 @@ const UserAvatar = () => {
 
   return (
    <>
-    <div>
+    <div className="flex justify-center">
     <Menu as="div" className="relative inline-block text-left">
         <div>
-            <MenuButton className="">
+            <MenuButton className="flex justify-center">
                <MdOutlinePerson size={18} className="hover:cursor-pointer"/>
             </MenuButton>
         </div>
