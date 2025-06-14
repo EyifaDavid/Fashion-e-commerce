@@ -44,7 +44,7 @@ const fetchWithAuth = async (url, options = {}) => {
 
 export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, { rejectWithValue }) => {
   try {
-    const data = await fetchWithAuth('/api/cart');
+    const data = await fetchWithAuth('/cart');
     return data.items || [];
   } catch (err) {
     return rejectWithValue(err.message);
@@ -55,7 +55,7 @@ export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ productId, quantity }, thunkAPI) => {
     try {
-      const response = await fetchWithAuth('/api/cart', {
+      const response = await fetchWithAuth('/cart', {
         method: 'POST',
         body: JSON.stringify({ productId, quantity }),
       });

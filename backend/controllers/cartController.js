@@ -17,9 +17,10 @@ export const getCart = async (req, res) => {
         quantity: item.quantity,
       })),
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+ } catch (error) {
+  console.error("AddToCart Error:", error);  // log full error
+  res.status(500).json({ error: error.message || 'Internal server error' });
+}
 };
 
 
@@ -73,9 +74,10 @@ export const addToCart = async (req, res) => {
         quantity: item.quantity,
       })),
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+ } catch (error) {
+  console.error("AddToCart Error:", error);  // log full error
+  res.status(500).json({ error: error.message || 'Internal server error' });
+}
 };
 
 

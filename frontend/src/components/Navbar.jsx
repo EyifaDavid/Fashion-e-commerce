@@ -100,23 +100,20 @@ const Navbar = () => {
               </span>
             )}
           </Link>
-          <Link to= "/admin"
-           className="relative">
-            <MdAdminPanelSettings size={18} />
-          </Link>
+          {user?.isAdmin && ( 
+          <a href="/admin" className="text-sm font-medium text-blue-500">
+            <MdAdminPanelSettings size={18}/>
+          </a> )}
+          <UserAvatar size={18}/>
         </div>
       </div>
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
         <div className="md:hidden px-4 pb-3 pt-2 space-y-3 bg-white shadow">
-          <a href="/Women" className="block">Women</a>
-          <a href="/Men" className="block">Men</a>
-          <a href="#">Kids</a>
-          <a href="#">Our mission</a>
-          <a href="#">Archive</a>
-          <a href="#">Gifts</a>
-          <a className="text-blue-500" href="#">Inner Circle</a>
+          <a href="/" className="block">Home</a>
+          <a href="/shop/women" className="block">Women</a>
+          <a href="/shop/men" className="block">Men</a>
         </div>
       )}
     </div>
