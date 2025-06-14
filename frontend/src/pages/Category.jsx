@@ -15,15 +15,20 @@ export default function CategoryPage({ handleAddToCart }) {
   useEffect(() => {
     const API = import.meta.env.VITE_API_BASE_URL;
     let url = `${API}/products`;
-    if (category !== "shop") {
-      url += `?gender=${category}`;
-    }
 
-    if (category === "discounts") {
-    url += `?discount=true`; 
-  } else if (category !== "shop") {
-    url += `?gender=${category}`;
+     const params = new URLSearchParams();
+
+  if (category === "discounts") {
+    params.append("discount", "true");
+ } else if (category && category !== "shop" && category !== "undefined") {
+  params.append("gender", category);
+}
+
+  if ([...params].length > 0) {
+    url += `?${params.toString()}`;
   }
+
+  console.log("Final Fetch URL:", url); // Debug helper
 
     const fetchProducts = async () => {
       try {
@@ -54,21 +59,24 @@ export default function CategoryPage({ handleAddToCart }) {
       <h2 className="text-2xl font-bold mb-6 capitalize">{category} Collection</h2>
 
       {/* Filter buttons (only show for shop page) */}
-        <div className="flex gap-4 mb-6">
-          {subCategories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSubCategory(cat)}
-              className={`px-4 py-2 rounded-full border ${
-                subCategory === cat
-                  ? "bg-black text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </button>
-          ))}
-        </div>
+        <div className="mb-6 overflow-x-auto">
+      <div className="flex gap-2 md:gap-4 min-w-max">
+        {subCategories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSubCategory(cat)}
+            className={`px-4 py-2 rounded-full border whitespace-nowrap ${
+              subCategory === cat
+                ? "bg-black text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+
       
 
       {loading ? (

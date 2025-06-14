@@ -44,6 +44,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
