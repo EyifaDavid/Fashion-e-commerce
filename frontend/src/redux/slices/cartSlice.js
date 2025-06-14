@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '../../config';
 
 const fetchWithAuth = async (url, options = {}) => {
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +20,7 @@ const fetchWithAuth = async (url, options = {}) => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      await fetch('/api/users/logout', { method: 'POST', credentials: 'include' });
+      await fetch(`${API_BASE_URL}/users/logout`, { method: 'POST', credentials: 'include' });
 
       // Redirect after a delay
       setTimeout(() => {

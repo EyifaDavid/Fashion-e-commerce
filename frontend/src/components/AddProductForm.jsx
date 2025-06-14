@@ -12,6 +12,7 @@ import { useAddProductMutation, useGetProductsQuery, useUpdateProductMutation } 
 import { toast } from 'sonner';
 import allSizes from '../utils/sizes';
 import allGenders from '../utils/genders';
+import { API_BASE_URL } from '../config';
 
 
 const AddProductForm = () => {
@@ -170,7 +171,7 @@ const submitHandler = async (data) => {
   useEffect(() => {
   if (id) {
     const fetchProduct = async () => {
-      const res = await fetch(`/api/products/${id}`);
+      const res = await fetch(`${API_BASE_URL}/products/${id}`);
       const data = await res.json();
       const product = data.data;
 
