@@ -35,20 +35,25 @@ const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
 const allowedOrigins = [
   "http://localhost:4000",
   "http://localhost:4001",
-  "https://mavraudercollections.netlify.app"
+  "https://mavraudercollections.netlify.app",
+  // Add other domains/subdomains as needed
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., mobile apps, Postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-}));
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Added OPTIONS
+  allowedHeaders: ["Content-Type", "Authorization"], // Explicit headers
+  credentials: true, // Required for cookies
+  preflightContinue: false, // Disable preflight caching for Safari
+  optionsSuccessStatus: 204 // Safari-compatible success status
+  }));
 
 // app.use(cors({
 //     origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],

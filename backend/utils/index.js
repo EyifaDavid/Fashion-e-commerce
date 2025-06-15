@@ -22,6 +22,8 @@ export const createJWT = (res, userId)=> {
         secure:true,
         // sameSite:  process.env.NODE_ENV === "production" ? "none" : "lax", //prevent CSRF attack
         sameSite:"None",
+        domain:".netlify.app",
         maxAge: 1 * 24 * 60 * 60 * 1000, //a day
+        path:"/",
     })
 };
