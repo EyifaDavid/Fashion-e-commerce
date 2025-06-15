@@ -23,5 +23,6 @@ export const createJWT = (res, userId)=> {
         domain:"mavraudercollections.netlify.app",
         maxAge: 1 * 24 * 60 * 60 * 1000, //a day
         path:"/",
+        partitionKey: "cross-site"
     })
 };

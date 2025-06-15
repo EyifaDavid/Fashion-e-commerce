@@ -51,9 +51,9 @@ app.use(cors({
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  maxAge: 86400 // 24 hours for preflight caching
+  exposedHeaders: ['set-cookie'],
+  methods: ['GET','POST','PUT','DELETE','OPTIONS']
 }));
 
 // app.use(cors({

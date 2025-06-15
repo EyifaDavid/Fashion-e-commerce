@@ -161,6 +161,15 @@ export const verify = async(req,res) => {
        joinedOn: user.joinedOn ? user.joinedOn.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null,
       } });
 
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+      res
+        .cookie("token", token, { /* cookie config above */ })
+        .json({ 
+          msg: "Login successful",
+          token, // Send token in response body too
+          user: { /* user data */ }
+        });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
