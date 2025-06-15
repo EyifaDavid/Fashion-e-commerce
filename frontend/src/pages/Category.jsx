@@ -49,11 +49,11 @@ export default function CategoryPage() {
 
      const params = new URLSearchParams();
 
-  if (category === "discounts") {
-    params.append("discount", "true");
- } else if (category && category !== "shop" && category !== "undefined") {
-  params.append("gender", category);
-}
+    if (category === "discounts") {
+      params.append("discount", "true");
+  } else if (category && category !== "shop" && category !== "undefined") {
+    params.append("gender", category);
+  }
 
   if ([...params].length > 0) {
     url += `?${params.toString()}`;

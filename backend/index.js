@@ -31,19 +31,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
 
-// app.use(cors({
-//     origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
-//     methods: ["GET","POST","PUT","DELETE"],
-//     credentials:true,
-// }));
+app.use(cors({
+    origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
+    methods: ["GET","POST","PUT","DELETE"],
+    credentials:true,
+}));
 
-const corsOptions = {
-  origin: ["https://mavraudercollections.netlify.app"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: ["https://mavraudercollections.netlify.app","http://localhost:4000"],
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
@@ -159,7 +159,6 @@ app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
-  console.log("Cookies received:", req.cookies);
   next();
 });
 
