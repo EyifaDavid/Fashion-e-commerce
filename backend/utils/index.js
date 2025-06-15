@@ -20,7 +20,7 @@ export const createJWT = (res, userId)=> {
         httpOnly: true,
         secure: true,
         sameSite:"None",
-        domain:"mavraudercollections.netlify.app",
+        domain:".netlify.app",
         maxAge: 1 * 24 * 60 * 60 * 1000, //a day
         path:"/",
         partitionKey: "cross-site"
