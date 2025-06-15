@@ -78,7 +78,7 @@ export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth(`/api/cart/${productId}`, {
+      const response = await fetchWithAuth(`/cart/${productId}`, {
         method: 'DELETE',
       });
       return response.items; // assuming backend sends updated items array
@@ -91,7 +91,7 @@ export const removeFromCart = createAsyncThunk(
 
 export const incrementQuantity = createAsyncThunk('cart/incrementQuantity', async (productId, { rejectWithValue }) => {
   try {
-    const data = await fetchWithAuth('/api/cart', {
+    const data = await fetchWithAuth('/cart', {
       method: 'POST',
       body: JSON.stringify({ productId, quantity: 1 }),
     });
@@ -103,7 +103,7 @@ export const incrementQuantity = createAsyncThunk('cart/incrementQuantity', asyn
 
 export const decrementQuantity = createAsyncThunk('cart/decrementQuantity', async (productId, { rejectWithValue }) => {
   try {
-    const data = await fetchWithAuth('/api/cart', {
+    const data = await fetchWithAuth('/cart', {
       method: 'POST',
       body: JSON.stringify({ productId, quantity: -1 }),
     });
