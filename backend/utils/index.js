@@ -18,11 +18,10 @@ export const createJWT = (res, userId)=> {
 
     res.cookie("token", token,{
         httpOnly: true,
-        secure: true,
+        // secure: process.env.NODE_ENV !== "production",
+        secure:true,
+        // sameSite:  process.env.NODE_ENV === "production" ? "none" : "lax", //prevent CSRF attack
         sameSite:"None",
-        domain:".netlify.app",
         maxAge: 1 * 24 * 60 * 60 * 1000, //a day
-        path:"/",
-        partitionKey: "cross-site"
     })
 };
