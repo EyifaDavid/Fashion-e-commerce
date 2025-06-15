@@ -33,27 +33,28 @@ const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
 
 
 const allowedOrigins = [
-  "http://localhost:4000",
-  "http://localhost:4001",
   "https://mavraudercollections.netlify.app",
-  // Add other domains/subdomains as needed
+  "http://localhost:4000",  // For development
+  "http://localhost:4001"   // If using another port
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., mobile apps, Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || 
+        origin.endsWith('.netlify.app') || // Allow all Netlify previews
+        origin.includes('localhost')) {     // Allow localhost variants
+      return callback(null, true);
     }
+    callback(new Error('Not allowed by CORS'));
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Added OPTIONS
-  allowedHeaders: ["Content-Type", "Authorization"], // Explicit headers
-  credentials: true, // Required for cookies
-  preflightContinue: false, // Disable preflight caching for Safari
-  optionsSuccessStatus: 204 // Safari-compatible success status
-  }));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400 // 24 hours for preflight caching
+}));
 
 // app.use(cors({
 //     origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
@@ -169,6 +170,14 @@ app.use(express.urlencoded( {extended:true}));
 app.use(morgan('dev'));
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  console.log('Incoming cookies:', req.cookies);
+  console.log('Request origin:', req.headers.origin);
+  res.set('Cache-Control', 'no-store');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
 
 // Routes
 app.use("/api", routes)
@@ -177,14 +186,6 @@ app.use("/api", routes)
 
 app.use(routeNotFound)
 app.use(errorHandler)
-
-// Test route
-app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-store');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  next();
-});
 
 
 // Start server
