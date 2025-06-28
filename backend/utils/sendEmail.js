@@ -14,7 +14,7 @@ const sendEmail = async ({ email, code }) => {
         code,
       },
     });
-
+    console.log("Using Public Key:", publicKey);
     console.log("Email sent via EmailJS:", response.data);
   } catch (err) {
     console.error("EmailJS error:", err.response?.data || err.message);
