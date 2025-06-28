@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { createJWT } from "../utils/index.js";
+import sendEmail from "../utils/sendEmail.js";
 
 
 dotenv.config();
