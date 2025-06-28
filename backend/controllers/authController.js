@@ -75,47 +75,78 @@ export const signup = async (req, res) => {
 // };
 
 
+// export const login = async (req, res) => {
+//   const { email } = req.body;
+
+//  if (!email) return res.status(400).json({ msg: "Email is required" });
+
+//   try {
+//     let user = await User.findOne({ email });
+//     const code = Math.floor(100000 + Math.random() * 900000).toString(); // e.g., "791320"
+//     const codeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+//     if (!user) {
+//       // Create new user with code and expiry
+//       user = new User({
+//         email,
+//         code,
+//         codeExpires,
+//       });
+//     } else {
+//       // Update existing user with new code and expiry
+//       user.code = code;
+//       user.codeExpires = codeExpires;
+//     }
+
+//     await user.save();
+
+//     const mailOptions = {
+//       from: '"Mavrauder" <no-reply@mavrauder.com>',
+//       to: email,
+//       subject: "Your Login Code for Mavrauder",
+//       text: `Your login code is: ${code}. It will expire in 10 minutes.`,
+//       html: `
+//       <div>
+//       <p>Hi fam,</p>
+//       <p>Your login code is: <b>${code}</b>. It will expire in 10 minutes.</p>
+//       <p>Congratulations, you're no longer a virgin Thanks for fucking with us<p/>
+//       </div>`,
+      
+//     };
+
+//     await transporter.sendMail(mailOptions);
+//     console.log("Code sent to email:", email);
+
+//     console.log(`Code for ${email}: ${code}`);
+//     res.status(200).json({ msg: "Login code sent to email", email });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ msg: "Server error" });
+//   }
+
+// };
+
+
 export const login = async (req, res) => {
   const { email } = req.body;
 
- if (!email) return res.status(400).json({ msg: "Email is required" });
+  if (!email) return res.status(400).json({ msg: "Email is required" });
 
   try {
     let user = await User.findOne({ email });
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // e.g., "791320"
-    const codeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeExpires = new Date(Date.now() + 10 * 60 * 1000);
 
     if (!user) {
-      // Create new user with code and expiry
-      user = new User({
-        email,
-        code,
-        codeExpires,
-      });
+      user = new User({ email, code, codeExpires });
     } else {
-      // Update existing user with new code and expiry
       user.code = code;
       user.codeExpires = codeExpires;
     }
 
     await user.save();
 
-    const mailOptions = {
-      from: '"Mavrauder" <no-reply@mavrauder.com>',
-      to: email,
-      subject: "Your Login Code for Mavrauder",
-      text: `Your login code is: ${code}. It will expire in 10 minutes.`,
-      html: `
-      <div>
-      <p>Hi fam,</p>
-      <p>Your login code is: <b>${code}</b>. It will expire in 10 minutes.</p>
-      <p>Congratulations, you're no longer a virgin Thanks for fucking with us<p/>
-      </div>`,
-      
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log("Code sent to email:", email);
+    await sendEmail({ email, code });
 
     console.log(`Code for ${email}: ${code}`);
     res.status(200).json({ msg: "Login code sent to email", email });
@@ -123,8 +154,9 @@ export const login = async (req, res) => {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
   }
-
 };
+
+
 
 export const verify = async(req,res) => {
  const { email, code } = req.body;
