@@ -153,7 +153,7 @@ export default function ProductSlider({ title = "Featured"}) {
       </div>
 
       {/* Color swatches */}
-      <div className="hidden group-hover:block mt-4 transition-all duration-300">
+      <div className="h-6 opacity-0 group-hover:opacity-100 mt-4 transition-all duration-300">
         <div className="flex gap-2 mb-2">
           {product.colors?.slice(0, 4).map((color, index) => (
             <div

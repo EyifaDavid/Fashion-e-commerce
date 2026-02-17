@@ -3,16 +3,15 @@ import cors from "cors";
 import productRoutes from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import multer from "multer";
-import cloudinary from "./utils/cloudinary.js"
+import cloudinary from "./utils/cloudinary.js";
 import fs from "fs";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import dbConnection from "./utils/index.js";
 import cookieParser from "cookie-parser";
 import { errorHandler, routeNotFound } from "./middleware/errorMiddleware.js";
-import routes from "./routes/index.js"
+import routes from "./routes/index.js";
 import Replicate from "replicate";
-
 
 // const express = require('express');
 // const cors = require('cors');
@@ -23,13 +22,12 @@ import Replicate from "replicate";
 // const fs = require('fs');
 // const morgan = require('morgan');
 
-dotenv.config()
+dotenv.config();
 dbConnection();
-
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
+const upload = multer({ dest: "uploads/" }); // Temporary upload dir
 
 // app.use(cors({
 //     origin: ["http://localhost:4000","http://localhost:4001","https://mavraudercollections.netlify.app"],
@@ -38,19 +36,23 @@ const upload = multer({ dest: 'uploads/' }); // Temporary upload dir
 // }));
 
 const corsOptions = {
-  origin: ["https://mavraudercollections.netlify.app","http://localhost:4000"],
+  origin: [
+    "http://localhost:4000",
+    "http://localhost:4001",
+    "http://localhost:5000",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post("/api/upload", upload.single("image"), async (req, res) => {
   try {
     const path = req.file.path;
 
     const result = await cloudinary.uploader.upload(path, {
-      folder: 'tryon-app', // Optional: folder name in Cloudinary
+      folder: "tryon-app", // Optional: folder name in Cloudinary
     });
 
     fs.unlinkSync(path); // Remove local file after upload
@@ -58,7 +60,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     res.json({ url: result.secure_url });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to upload image' });
+    res.status(500).json({ error: "Failed to upload image" });
   }
 });
 
@@ -139,29 +141,28 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
 // Middleware
 
-
 app.use(express.json());
-app.use(express.urlencoded( {extended:true}));
-app.use(morgan('dev'));
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 app.use(cookieParser());
 
-
 // Routes
-app.use("/api", routes)
+app.use("/api", routes);
 // app.use('/api/products', productRoutes);
 // app.use('/api/users', userRoutes);
 
-app.use(routeNotFound)
-app.use(errorHandler)
+app.use(routeNotFound);
+app.use(errorHandler);
 
 // Test route
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-store');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
+  res.set("Cache-Control", "no-store");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
   next();
 });
 
-
 // Start server
-app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Server listening on http://localhost:${PORT}`)
+);

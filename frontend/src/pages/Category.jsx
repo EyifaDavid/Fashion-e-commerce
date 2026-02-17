@@ -160,22 +160,23 @@ export default function CategoryPage() {
                 </div>
               </div>
 
-              <div className="hidden group-hover:block mt-4 transition-all duration-300">
-                <div className="flex gap-2 mb-2">
-                  {item.colors?.slice(0, 4).map((color, index) => (
-                    <div
-                      key={index}
-                      className="w-4 h-4 rounded-full border cursor-pointer"
-                      style={{ backgroundColor: color }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        console.log("Selected color:", color);
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
+          <div className="h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4"
+              >
+            <div className="flex gap-2 mb-2">
+              {item.colors?.slice(0, 4).map((color, index) => (
+                <div
+                  key={index}
+                  className="w-4 h-4 rounded-full border cursor-pointer"
+                  style={{ backgroundColor: color }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    console.log("Selected color:", color);
+                  }}
+                />
+              ))}
+            </div>
+        </div>    
             </div>
           ))}
         </div>

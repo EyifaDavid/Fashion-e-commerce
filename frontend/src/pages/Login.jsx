@@ -19,6 +19,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [demoCode, setDemoCode] = useState("");
+  const isDemoUi = import.meta.env.VITE_DEMO_MODE === "true" || !!demoCode;
   const API = import.meta.env.VITE_API_BASE_URL;
 
   const {
@@ -41,6 +43,7 @@ useEffect(() => {
   const handleEmailSubmit = async (data) => {
     setLoading(true);
     setError("");
+    setDemoCode("");
     try {
       const response = await fetch(`${API}/auth/login`, {
         method: "POST",
@@ -52,6 +55,9 @@ useEffect(() => {
       if (!response.ok) throw new Error(resData.msg || "Error sending code");
       setEmail(data.email);
       setStep("code");
+      if (resData.demoMode && resData.demoCode) {
+        setDemoCode(resData.demoCode);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -99,6 +105,12 @@ useEffect(() => {
           onSubmit={handleSubmit(step === "email" ? handleEmailSubmit : handleCodeSubmit)}
           className="form-container w-full md:w-[700px] flex flex-col gap-y-6 bg-white px-10 pt-10 pb-14"
         >
+          {isDemoUi && (
+            <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              Demo mode active: if email delivery fails, OTP will be shown on this page.
+            </div>
+          )}
+
           <div className="">
             <p className="text-black text-3xl font-bold text-start">
               {step === "email" ? "Log in" : "Enter Code"}
@@ -108,6 +120,11 @@ useEffect(() => {
                 ? "Enter your email and we'll send you a login code"
                 : "Enter the code we sent to your email"}
             </p>
+            {step === "code" && demoCode && (
+              <p className="mt-2 rounded-md border border-amber-300 bg-amber-100 px-3 py-2 text-sm text-amber-900">
+                Demo mode code: <span className="font-semibold">{demoCode}</span>
+              </p>
+            )}
           </div>
 
           {error && <p className="text-red-500">{error}</p>}

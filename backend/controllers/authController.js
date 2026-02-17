@@ -1,42 +1,31 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.js";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { createJWT } from "../utils/index.js";
-
+import { sendLoginCodeEmail } from "../utils/sendEmail.js";
 
 dotenv.config();
-
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
 
 export const signup = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({email})
+    const existingUser = await User.findOne({ email });
   if (existingUser) return res.status(400).json({ msg: 'User already exists' });
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const code = Math.floor(100000 + Math.random() * 900000); // 6-digit code
-  const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const codeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
-  user = new User({
+  const user = new User({
       email,
       password: hashedPassword,
-      verificationCode: code,
-      verificationCodeExpires: expiry,
+      code,
+      codeExpires,
     });
     await user.save();
 
-  await sendEmail(email, 'Your Verification Code', `Your code is: ${code}`);
+  await sendLoginCodeEmail(email, code);
 
   res.json({ msg: 'Signup successful. Check your email for the code.' });
 
@@ -77,6 +66,8 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email } = req.body;
+  const demoModeValue = String(process.env.DEMO_MODE || "").toLowerCase();
+  const isDemoMode = ["true", "1", "yes", "on"].includes(demoModeValue);
 
  if (!email) return res.status(400).json({ msg: "Email is required" });
 
@@ -100,25 +91,36 @@ export const login = async (req, res) => {
 
     await user.save();
 
-    const mailOptions = {
-      from: '"Mavrauder" <no-reply@mavrauder.com>',
-      to: email,
-      subject: "Your Login Code for Mavrauder",
-      text: `Your login code is: ${code}. It will expire in 10 minutes.`,
-      html: `
-      <div>
-      <p>Hi fam,</p>
-      <p>Your login code is: <b>${code}</b>. It will expire in 10 minutes.</p>
-      <p>Congratulations, you're no longer a virgin Thanks for fucking with us<p/>
-      </div>`,
-      
-    };
+    let emailSent = false;
+    let useDemoFallback = isDemoMode;
+    try {
+      await sendLoginCodeEmail(email, code);
+      emailSent = true;
+      console.log("Code sent to email:", email);
+    } catch (emailErr) {
+      console.error("Email delivery failed:", emailErr.message);
+      const resendTestingRestriction =
+        typeof emailErr?.message === "string" &&
+        emailErr.message.includes(
+          "You can only send testing emails to your own email address"
+        );
 
-    await transporter.sendMail(mailOptions);
-    console.log("Code sent to email:", email);
+      useDemoFallback = isDemoMode || resendTestingRestriction;
+
+      if (!useDemoFallback) {
+        throw emailErr;
+      }
+    }
 
     console.log(`Code for ${email}: ${code}`);
-    res.status(200).json({ msg: "Login code sent to email", email });
+    res.status(200).json({
+      msg: emailSent
+        ? "Login code sent to email"
+        : "Demo mode active: email delivery unavailable, use demo code",
+      email,
+      demoMode: useDemoFallback && !emailSent,
+      demoCode: useDemoFallback && !emailSent ? code : undefined,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });

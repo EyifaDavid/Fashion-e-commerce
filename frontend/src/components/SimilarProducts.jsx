@@ -94,7 +94,7 @@ export default function SimilarProducts({ ads = [] }) {
         <div className="w-auto max-w-1/2 ">
         <img src= {twos} alt="two for one hoodie-set" className="object-contain w-full" />
         </div>
-        <div className="w-full"></div>
+
 
       <section className="flex flex-col md:flex-row ">
 
@@ -104,7 +104,7 @@ export default function SimilarProducts({ ads = [] }) {
           item.type === "product" ? (
           <div
           key={`product-${item.id}`}
-          className="group min-w-[300px] rounded-lg p-2 overflow-hidden hover:shadow-lg inline-block transition-transform transform hover:scale-105 duration-300 relative hover:z-20"
+          className="group min-w-[300px] rounded-lg p-4 overflow-hidden hover:shadow-lg inline-block transition-transform transform hover:scale-105 duration-300 relative hover:z-20"
         >
               {/* Image section wrapped in Link */}
               <Link
@@ -141,7 +141,7 @@ export default function SimilarProducts({ ads = [] }) {
               </div>
 
               {/* Swatches */}
-              <div className="hidden group-hover:block mt-4 transition-all duration-300">
+              <div className="opacity-0 group-hover:opacity-100 mt-4 transition-opacity duration-50">
                 <div className="flex gap-2 mb-2">
                   {item.colors?.slice(0, 4).map((color, index) => (
                     <div
