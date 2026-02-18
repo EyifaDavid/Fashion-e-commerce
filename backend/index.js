@@ -40,6 +40,7 @@ const corsOptions = {
     "http://localhost:4000",
     "http://localhost:4001",
     "http://localhost:5000",
+    "https://mavraudercollections.netlify.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
