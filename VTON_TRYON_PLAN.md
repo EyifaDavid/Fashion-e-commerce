@@ -161,13 +161,23 @@ tryOn: builder.mutation({ query: (formData) => ({ url: "/tryon", method: "POST",
 ### 6.2 `components/TryOnButton.jsx` (NEW)
 Props: `productId`, `productName`, `canTryOn` (bool — whether a garment image exists).
 - Hidden `<input type="file" accept="image/*">` + "Try it on" button.
+- **Photo sources:** (1) "Choose a photo" = file picker; (2) "Take a photo" = **real webcam overlay**
+  (`navigator.mediaDevices.getUserMedia` + video preview + canvas capture → JPEG `Blob`), which works on
+  **desktop** too — the earlier `capture="user"` input was mobile-only and has been replaced.
+  Requires a secure context: fine on Render (https) and localhost.
+- **Session "model photo":** once a photo is uploaded/captured it's saved (as an object URL) in the Redux
+  `tryon` slice (`freshApp/frontend/src/redux/slices/tryonSlice.js`) for the current visit. Every product page's
+  button then offers "Try it on" reusing that photo (re-fetched via `fetch(objectURL)` → blob), so the model
+  stays constant and only the garment changes — no re-upload per product. Cleared on tab close; "Use different
+  photo" revokes + resets it. `[SESSION-ONLY]` — client DOM lifetime, never storage.
 - Client-side validation (type in jpeg/png/webp, size ≤ 8MB) before upload.
 - Builds `FormData` (`photo`, `productId`), calls `useTryOnMutation`.
 - **Loading UX**: modal/inline with a spinner (reuse the app's `animate-spin` pattern) + copy:
   "Creating your try-on… this can take 30s–2min on our free service." Optionally an elapsed-seconds counter.
-- **Result**: show returned image + "Try again" (reset) + "Use a different photo".
+- **Result**: show returned image + retry options (choose/take photo) + "Done".
 - **Errors**: `toast.error(err?.data?.message || "Try-on is busy, please try again shortly.")`.
 - Never stores the photo; only keeps an in-memory object URL for the local preview.
+- Webcam stream is stopped + released on capture/cancel/close/unmount (no lingering camera light).
 
 ### 6.3 `pages/Catalogue.jsx` — mount it
 Under the Add-to-Cart block:
@@ -190,8 +200,9 @@ a clean, front-facing shot works best; defaults to the first product image)."
 
 - **No photo persistence:** multer `memoryStorage()` → `req.file.buffer`, used for the request only, never
   written to disk/Cloudinary. The only third party that receives it is the HF Space itself (inherent to the
-  feature — noted in code + can be surfaced in UI copy). To OPT INTO storage later, upload `req.file.buffer` to
-  Cloudinary in the controller — search `// [OPT-IN STORAGE]`.
+  feature — noted in code + can be surfaced in UI copy). Client-side, the photo lives as an in-memory object URL
+  in Redux for the current tab visit only (`[SESSION-ONLY]`). To OPT INTO storage later, upload
+  `req.file.buffer` to Cloudinary in the controller — search `// [OPT-IN STORAGE]`.
 - **Rate limiting:** per-user (falls back to IP) — protects the *shared* free Space quota, not just ours.
 - **Validation:** type (jpeg/png/webp) + size (8MB) on BOTH client and server; server is the source of truth.
 
