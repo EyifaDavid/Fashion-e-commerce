@@ -23,5 +23,7 @@ export const createJWT = (res, userId)=> {
         // sameSite:  process.env.NODE_ENV === "production" ? "none" : "lax", //prevent CSRF attack
         sameSite:"None",
         maxAge: 1 * 24 * 60 * 60 * 1000, //a day
-    })
+    });
+
+    return token;
 };

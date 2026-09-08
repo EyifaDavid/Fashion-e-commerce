@@ -1,9 +1,22 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
+// Prefer the httpOnly cookie, but also accept the JWT via the Authorization
+// header (used by clients that can't reliably store/send Secure cookies, e.g.
+// some mobile browsers / ITP). fetchWithAuth + apiSlice always send both.
+const readToken = (req) => {
+  const cookieToken = req.cookies?.token;
+  if (cookieToken) return cookieToken;
+
+  const header = req.headers?.authorization || "";
+  if (header.startsWith("Bearer ")) return header.slice(7).trim();
+
+  return null;
+};
+
 const protectRoute = async (req, res, next) => {
   try {
-    let token = req.cookies?.token;
+    const token = readToken(req);
 
     if (token) {
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);

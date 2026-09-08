@@ -145,7 +145,7 @@ export const verify = async(req,res) => {
       return res.status(400).json({ msg: "Invalid or expired code" });
     }
 
-    createJWT(res,user._id)
+    const token = createJWT(res,user._id)
 
     console.log("Cookie set!");
     console.log("Cookies received:", req.cookies);
@@ -155,7 +155,7 @@ export const verify = async(req,res) => {
     user.codeExpires = null;
     await user.save();
 
-    res.status(200).json({ msg: "Login successful", user: {
+    res.status(200).json({ msg: "Login successful", token, user: {
        id: user._id, 
        email: user.email, 
        isAdmin: user.isAdmin,

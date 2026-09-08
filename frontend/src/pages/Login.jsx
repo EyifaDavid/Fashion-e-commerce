@@ -82,6 +82,8 @@ useEffect(() => {
 
       // Dispatch user info to Redux
       dispatch(setCredentials(resData.user));
+      // Store the JWT for the Bearer-auth fallback (see apiSlice prepareHeaders).
+      if (resData.token) localStorage.setItem("token", resData.token);
       navigate("/Landing");
     } catch (err) {
       setError(err.message);
