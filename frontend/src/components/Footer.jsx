@@ -8,7 +8,7 @@ export default function Footer() {
 
         {/* Brand */}
         <div>
-          <h2 className="text-xl font-bold">Mavrauder</h2>
+          <h2 className="text-xl font-bold">UBIQUITOUS</h2>
           <p className="text-sm mt-2 text-gray-400">
             Your go-to for stylish, affordable fashion. Once you fuck with us we bet you'd keep on coming for more
           </p>
@@ -121,7 +121,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-10 text-center text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} Mavrauder. All rights reserved.
+        &copy; {new Date().getFullYear()} UBIQUITOUS. All rights reserved.
       </div>
     </footer>
   );

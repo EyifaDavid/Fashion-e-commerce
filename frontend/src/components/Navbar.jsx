@@ -45,8 +45,9 @@ const Navbar = () => {
         </nav>
 
         {/* Center logo */}
-        <div className="text-2xl font-bold flex-1 text-center md:text-left md:flex-none">
-          Mavrauder
+        <div className="flex items-center gap-2 flex-1 text-center md:text-left md:flex-none">
+          <img src="/ubiquitous-logo.png" alt="UBIQUITOUS" className="h-8 w-auto" />
+          <span className="text-2xl font-bold">UBIQUITOUS</span>
         </div>
 
         {/* Right content */}

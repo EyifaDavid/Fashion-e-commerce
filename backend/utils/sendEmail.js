@@ -35,7 +35,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
 };
 
 export const sendLoginCodeEmail = async (email, code) => {
-  const subject = "Your Login Code for Mavrauder";
+  const subject = "Your Login Code for UBIQUITOUS";
   const text = `Your login code is: ${code}. It will expire in 10 minutes.`;
   const html = `
     <div>

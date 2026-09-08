@@ -21,12 +21,12 @@ export default function AdminDashboard() {
     <div className="w-full min-h-screen flex flex-col md:flex-row">
     
       {/* Sidebar */}
-      <div className="w-1/5 h-screen bg-white dark:bg-gray-800 sticky top-0 hidden md:block">
+      <div className="w-72 min-w-72 h-screen bg-white dark:bg-gray-800 sticky top-0 hidden md:block">
         <Sidebar/>
       </div>
       <MobileSidebar/>
       {/* Main content */}
-        <div className="flex-1 Overflow-y-auto bg-gray-500 ">
+        <div className="flex-1 overflow-y-auto bg-gray-500 h-screen">
         <AdminNavbar/>
 
         <div className="p-4 2xl:px-10">

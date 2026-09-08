@@ -103,6 +103,7 @@ export const addProduct = async (req, res) => {
       genders,
       category,
       noColors,
+      garmentImage, // [VTON] optional; falls back to images[0] at try-on time
     } = req.body;
 
     if (!images || images.length === 0) {
@@ -121,6 +122,7 @@ export const addProduct = async (req, res) => {
       category,
       discount,
       noColors,
+      garmentImage,
     });
 
     await newProduct.save();

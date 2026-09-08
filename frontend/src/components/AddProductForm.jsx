@@ -65,6 +65,7 @@ const submitHandler = async (data) => {
     sizes: selectedSizes,
     genders: selectedGenders,
     images: images,
+    garmentImage: garmentImage, // [VTON] optional dedicated try-on garment shot
     noColors: selectedColors.length.toString(),
   };
 
@@ -107,6 +108,7 @@ const submitHandler = async (data) => {
     const [images, setImages] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedGenders, setSelectedGenders] = useState([]);
+    const [garmentImage, setGarmentImage] = useState(existingProduct?.garmentImage || ''); // [VTON]
 
     const handleSizeChange = (size) => {
       setSelectedSizes((prev) =>
@@ -138,6 +140,18 @@ const submitHandler = async (data) => {
       } catch (error) {
         console.error('Image upload failed:', error);
         toast.error('Failed to upload image. Please try again.');
+      }
+    };
+    // [VTON] Optional single garment image used by the virtual try-on feature.
+    const handleAddGarment = async (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      try {
+        const url = await handleUploadImage(file);
+        setGarmentImage(url);
+      } catch (error) {
+        toast.error('Failed to upload garment image. Please try again.');
       }
     };
     const handleAddCategory = () => {
@@ -193,6 +207,7 @@ const submitHandler = async (data) => {
       setSelectedGenders(product.genders || []);
       setSelectedCategory(product.category || '');
       setImages(product.images || []);
+      setGarmentImage(product.garmentImage || ''); // [VTON]
       setSelectedImage(product.images?.[0] || null);
       
     };
@@ -366,6 +381,34 @@ const submitHandler = async (data) => {
     </div>
   </div>
 </div>
+
+          {/* [VTON] Garment image for Try-On (optional) */}
+          <div className="mt-10">
+            <h1 className='font-bold pb-2'>Try-On Garment Image <span className="text-xs font-normal text-gray-500">(optional)</span></h1>
+            <p className='text-xs text-gray-500 pb-3'>A clean, front-facing garment shot gives the best virtual try-on. Defaults to the first product image if left empty.</p>
+            <div className="flex items-center gap-3">
+              <img
+                src={garmentImage || 'https://via.placeholder.com/80'}
+                alt="Garment"
+                className="w-20 h-20 object-contain bg-gray-100 rounded"
+              />
+              <label htmlFor="garmentUpload" className="cursor-pointer border rounded px-3 py-2 text-sm hover:bg-gray-100">
+                {garmentImage ? 'Change' : 'Upload garment'}
+              </label>
+              {garmentImage && (
+                <button type="button" onClick={() => setGarmentImage('')} className="text-sm text-red-500">
+                  Remove
+                </button>
+              )}
+              <input
+                type="file"
+                id="garmentUpload"
+                accept=".jpg, .png, .jpeg, .webp"
+                onChange={handleAddGarment}
+                className="hidden"
+              />
+            </div>
+          </div>
 
            {/*prod category section*/}
         <div className="mt-15">

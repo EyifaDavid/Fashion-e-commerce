@@ -2,7 +2,7 @@ import React from 'react';
 import { FaBox, FaBoxOpen, FaHome, FaTasks, FaTrashAlt, FaUsers } from "react-icons/fa";
 import { MdDashboard, MdDashboardCustomize, MdInventory, MdOutlineAddTask, MdOutlineDashboard, MdOutlinePendingActions, MdSettings, MdShoppingBag, MdTaskAlt } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
-import devX from "../assets/images/devx.jpg"
+
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { setOpenSidebar } from '../redux/slices/authSlice';
@@ -70,10 +70,10 @@ const Sidebar = () => {
     <div className=' min-h-full flex flex-col gap-6 p-5 bg-[#F5F5F5]'>
 
         <div className='flex items-center  '>
-        <img src={devX}
-        className=' p-2 rounded-full w-20'>
+        <img src="/ubiquitous-logo.png"
+        className='w-16 h-auto'>
         </img>
-        <span className='text-2xl font-bold text-black '>Shop</span>
+        <span className='text-2xl font-bold text-black '>Dashboard</span>
         </div>
         
         <div className='flex-1 flex-col gap-y-5 py-8'>

@@ -12,6 +12,9 @@ const productSchema = new Schema({
   },
   brand: { type: String, default: "No Brand" },
   images: [{ type: String }], // URLs of images stored in Cloudinary
+  // [VTON] Optional dedicated garment shot for virtual try-on (a clean, front-facing image
+  // works best). Falls back to images[0] when empty. See tryonController.resolveGarment.
+  garmentImage: { type: String, default: "" },
   sizes: [{ type: String }], // e.g., ['S', 'M', 'L', 'XL']
   genders: [{type:String}],
   colors: [{ type: String }], // e.g., ['red', 'blue', 'green']

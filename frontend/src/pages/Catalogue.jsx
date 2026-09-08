@@ -4,6 +4,7 @@ import Button from '../components/Button';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/slices/cartSlice';
 import { MdOutlineShoppingBag } from 'react-icons/md';
+import TryOnButton from '../components/TryOnButton';
 import { useGetProductByIdQuery } from '../redux/slices/api/productApiSlice';
 import { toast } from 'sonner';
 import store from '../redux/store';
@@ -148,6 +149,15 @@ const handleAddToCart = () => {
           <Link to="/cart" className="ml-4 text-black">
             <MdOutlineShoppingBag size={30} className="hover:cursor-pointer" />
           </Link>
+        </div>
+
+        {/* Virtual Try-On (free HF Space MVP) */}
+        <div className="pt-2">
+          <TryOnButton
+            productId={product._id}
+            productName={product.name}
+            canTryOn={Boolean(product.garmentImage || product.images?.[0])}
+          />
         </div>
       </div>
     </div>
