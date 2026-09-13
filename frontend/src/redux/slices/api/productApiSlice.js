@@ -45,6 +45,16 @@ export const productApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Product'],
     }),
+    // [VTON] Admin: bulk-generate ALL missing on-model previews across the catalog.
+    // Backend responds 202 immediately with a queued count and runs sequentially
+    // in the background. Guarded against overlapping runs server-side.
+    generateAllProductPreviews: builder.mutation({
+      query: () => ({
+        url: `${PRODUCT_URL}/bulk-generate-previews`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Product'],
+    }),
   }),
 });
 
@@ -56,4 +66,5 @@ export const {
   useDeleteProductMutation,
   useUpdateProductMutation,
   useGenerateProductPreviewMutation,
+  useGenerateAllProductPreviewsMutation,
 } = apiSlice;

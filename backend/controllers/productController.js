@@ -1,6 +1,6 @@
 import Product from "../models/product.js";
 import cloudinary from '../utils/cloudinary.js';
-import { refreshProductPreviews, resolveGarment } from "../utils/modelPreview.js";
+import { refreshProductPreviews, resolveGarment, generateAllMissingPreviews } from "../utils/modelPreview.js";
 
 // // GET all products
 // export const getAllProducts = async (req, res) => {
@@ -229,6 +229,22 @@ export const uploadImage = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// [VTON] Admin-only: bulk generate ALL missing on-model previews for the catalog.
+// Runs sequentially in background (single-slot free Space). Returns 202 immediately with queued count.
+// Guards against overlapping runs — safe to call repeatedly.
+export const generateAllProductPreviews = async (req, res) => {
+  try {
+    const result = await generateAllMissingPreviews();
+    if (result.status === 'already-running') {
+      return res.status(409).json({ status: false, message: result.message });
+    }
+    return res.status(202).json({ status: true, ...result });
+  } catch (error) {
+    console.error('[modelPreview] bulk generation failed:', error?.message);
+    return res.status(500).json({ status: false, message: "Couldn't start bulk preview generation." });
   }
 };
 
