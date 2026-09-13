@@ -1,5 +1,6 @@
 import Product from "../models/product.js";
 import cloudinary from '../utils/cloudinary.js';
+import { refreshProductPreviews, resolveGarment } from "../utils/modelPreview.js";
 
 // // GET all products
 // export const getAllProducts = async (req, res) => {
@@ -127,6 +128,13 @@ export const addProduct = async (req, res) => {
 
     await newProduct.save();
 
+    // [VTON] Fire-and-forget on-model preview generation for the product's genders.
+    // Never awaited: it takes ~30s–2min per image on the free Space and must not
+    // block or fail the create. Falls back silently if there's no garment yet.
+    refreshProductPreviews(newProduct._id).catch((err) =>
+      console.error("[modelPreview] post-add generation failed:", err?.message)
+    );
+
     res.status(201).json({
       status: true,
       message: 'Product added successfully',
@@ -163,22 +171,30 @@ export const deleteProduct = async (req, res) => {
 //Update Product
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  console.log("Headers:", req.headers);
-  console.log("Body:", req.body);
   try {
+    // [VTON] Snapshot the garment BEFORE updating so we can tell whether it changed —
+    // only then must we regenerate previews that already exist.
+    const before = await Product.findById(id).select("images garmentImage");
+    const beforeGarment = before ? resolveGarment(before) : null;
+
     const updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
       new: true, // Return the updated document
       runValidators: true, // Run schema validation
-
-      
     });
 
     if (!updatedProduct) {
       return res.status(404).json({ status: false, message: 'Product not found' });
     }
 
+    // [VTON] Refresh on-model previews in the background. If the garment/primary image
+    // changed, force a regeneration; otherwise just fill in any missing previews (e.g.
+    // a newly added gender). Fire-and-forget — never blocks or fails the update.
+    const garmentChanged = beforeGarment !== resolveGarment(updatedProduct);
+    refreshProductPreviews(id, { force: garmentChanged }).catch((err) =>
+      console.error("[modelPreview] post-update generation failed:", err?.message)
+    );
+
     res.status(200).json({
-      
       status: true,
       message: 'Product updated successfully',
       data: updatedProduct,
@@ -213,5 +229,40 @@ export const uploadImage = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// [VTON] Manually (re)generate a product's on-model preview(s). Backfills products
+// that predate the feature and acts as a retry when a background generation failed.
+// Fire-and-forget + 202: generation takes ~30s–2min per image (well past a safe
+// request time), so we kick it off and let the admin refresh to see the result.
+// Query: ?force=true regenerates even existing previews (default fills missing only).
+export const generateProductPreview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const force = req.query.force === "true";
+
+    const product = await Product.findById(id).select("images garmentImage genders");
+    if (!product) {
+      return res.status(404).json({ status: false, message: 'Product not found.' });
+    }
+    if (!resolveGarment(product)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Add a product image or garment image before generating a preview.',
+      });
+    }
+
+    refreshProductPreviews(id, { force }).catch((err) =>
+      console.error("[modelPreview] manual generation failed:", err?.message)
+    );
+
+    return res.status(202).json({
+      status: true,
+      message: 'Generating on-model preview — this takes a minute or two. Refresh to see it.',
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: "Couldn't start preview generation." });
   }
 };

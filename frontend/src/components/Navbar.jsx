@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   MdAdminPanelSettings,
+  MdCheckroom,
   MdDashboard,
   MdOutlineFlagCircle,
   MdOutlinePerson,
@@ -8,14 +9,12 @@ import {
   MdOutlineShoppingBag,
 } from "react-icons/md";
 import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
-import { useDispatch, useSelector } from "react-redux";
-import { setOpenSidebar } from "../redux/slices/authSlice";
+import { useSelector } from "react-redux";
 import UserAvatar from "./UserAvatar";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
   const { cartItems } = useSelector((state) => state.cart);
   const uniqueItemCount = cartItems.length;
@@ -39,6 +38,9 @@ const Navbar = () => {
           <a href="/" className="hover:border-b-1">Home</a>
           <a href="/shop/women" className="hover:border-b-1">Women</a>
           <a href="/shop/men"className="hover:border-b-1">Men</a>
+          <Link to="/wardrobe" className="hover:border-b-1 flex items-center gap-1">
+            <MdCheckroom size={12} /> Wardrobe
+          </Link>
           {/* <a href="#"className="hover:border-b-1">Kids</a>
           <a href="#"className="hover:border-b-1">Our mission</a>
           <a href="#"className="hover:border-b-1">Archive</a> */}
@@ -115,6 +117,9 @@ const Navbar = () => {
           <a href="/" className="block">Home</a>
           <a href="/shop/women" className="block">Women</a>
           <a href="/shop/men" className="block">Men</a>
+          <Link to="/wardrobe" className="flex items-center gap-1" onClick={() => setMenuOpen(false)}>
+            <MdCheckroom size={16} /> Wardrobe
+          </Link>
         </div>
       )}
     </div>

@@ -1,56 +1,16 @@
 // controllers/tryonController.js
 import Product from "../models/product.js";
-import cloudinary from "../utils/cloudinary.js";
 import {
   runTryOn,
   TryOnBusyError,
   TryOnTimeoutError,
   TryOnUnavailableError,
 } from "../utils/hfTryon.js";
+import { rehostToCloudinary } from "../utils/rehost.js";
+import { resolveGarment } from "../utils/modelPreview.js";
 
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
 const MAX_BYTES = 8 * 1024 * 1024; // 8MB (also enforced by multer in the route)
-const REHOST_TIMEOUT_MS = 15_000; // guard against a slow HF file fetch
-
-// The HF Space's result URLs live in its worker's /tmp/gradio dir and 404 within
-// seconds (load-balanced space). Rehost the bytes to Cloudinary so the URL the
-// client receives is durable and works on every device/browser (incl. iOS).
-async function rehostToCloudinary(sourceUrl) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REHOST_TIMEOUT_MS);
-  let resp;
-  try {
-    resp = await fetch(sourceUrl, { signal: controller.signal });
-    if (!resp.ok) throw new Error(`result fetch failed: ${resp.status}`);
-  } catch (err) {
-    if (err.name === "AbortError") throw new Error("result fetch timed out");
-    throw err;
-  } finally {
-    clearTimeout(timer);
-  }
-
-  const buffer = Buffer.from(await resp.arrayBuffer());
-
-  const upload = (buf, options) =>
-    new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(options, (error, result) =>
-        error ? reject(error) : resolve(result)
-      );
-      stream.end(buf);
-    });
-
-  const result = await upload(buffer, {
-    folder: "tryon-results",
-    resource_type: "image",
-  });
-
-  return result.secure_url;
-}
-
-// [VTON] Which product image to send as the garment: dedicated field first, else primary image.
-function resolveGarment(product) {
-  return product.garmentImage || product.images?.[0] || null;
-}
 
 export const tryOn = async (req, res) => {
   try {

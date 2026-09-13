@@ -1,7 +1,6 @@
 import {
   Navigate,
   Outlet,
-  replace,
   Route,
   Routes,
   useLocation,
@@ -28,6 +27,8 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import { fetchCart } from "./redux/slices/cartSlice";
 import { useEffect } from "react";
 import CategoryPage from "./pages/Category";
+import MannequinLab from "./pages/MannequinLab";
+import Wardrobe from "./pages/Wardrobe";
 
 function Layout() {
   const {user}= useSelector((state)=> state.auth)
@@ -71,12 +72,16 @@ function App() {
           <Route path="/Cart" element={<Cart />} />
           <Route path="/Checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<Catalogue />} />
+          <Route path="/wardrobe" element={<Wardrobe />} />
           <Route path="/About" element={<About />} />
           <Route path="/shop" element={<CategoryPage />} />
           <Route path="/shop/:category" element={<CategoryPage />} />
         </Route>
         {/* <Route path="/admin/*" element={user?.isAdmin ? <AdminDashboard /> : <Navigate to="/" />} /> */}
         <Route path="/log-in" element={<Login />} />
+
+        {/* Dev/test route for the 3D mannequin — no auth, isolated from product pages. */}
+        <Route path="/mannequin-lab" element={<MannequinLab />} />
 
       <Route path="/admin" element={<AdminRoute />}>
        <Route element={<AdminDashboard />}>

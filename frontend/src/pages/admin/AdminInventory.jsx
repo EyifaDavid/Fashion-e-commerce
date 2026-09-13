@@ -1,33 +1,48 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { MdOutlineShoppingBag } from 'react-icons/md';
-import { useDeleteProductMutation, useGetProductsQuery } from '../../redux/slices/api/productApiSlice';
+import { MdOutlineShoppingBag, MdCheckroom } from 'react-icons/md';
+import { useDeleteProductMutation, useGetProductsQuery, useGenerateProductPreviewMutation } from '../../redux/slices/api/productApiSlice';
 import { IoEye, IoPencil, IoTrash } from 'react-icons/io5';
 import { FaTrash } from 'react-icons/fa';
 import ConfirmModal from '../../components/confirmModal';
 import { toast } from 'sonner';
 
 const AdminInventory = () => {
-   const { data: response, isLoading, error, refetch } = useGetProductsQuery();
+   const { data: response, isLoading, refetch } = useGetProductsQuery();
    const [showModal, setShowModal] = useState(false);
      const [productIdToDelete, setProductIdToDelete] = useState(null);
 
    const [deleteProduct]= useDeleteProductMutation();
+   const [generateProductPreview] = useGenerateProductPreviewMutation();
+   const [generatingId, setGeneratingId] = useState(null);
    const products = response?.data || [];
-   
+
 
    const handleDelete = async () => {
       await deleteProduct(productIdToDelete);
       setShowModal(false);
       await refetch();
       toast.success("Deleted successfully")
-    } 
+    }
 
      const handleDeleteClick = (id) => {
     setProductIdToDelete(id);
     setShowModal(true);
   };
+
+   // [VTON] Kick off background generation of the on-model preview(s) for this product.
+   // The API returns immediately (202); the image shows on a later refresh.
+   const handleGeneratePreview = async (id) => {
+     try {
+       setGeneratingId(id);
+       const res = await generateProductPreview({ id }).unwrap();
+       toast.success(res?.message || "Generating on-model preview — refresh in a minute.");
+     } catch (err) {
+       toast.error(err?.data?.message || "Couldn't start preview generation.");
+     } finally {
+       setGeneratingId(null);
+     }
+   };
 
     if (isLoading) return (
   <div className="flex items-center justify-center h-screen">
@@ -68,11 +83,29 @@ const AdminInventory = () => {
                 <td className="p-3">{item.noColors || '-'}</td>
                 <td className="p-3">{item.sizes?.join(', ') || '-'}</td>
                 <td className="p-3">
-                  <div className='flex gap-2'>
+                  <div className='flex gap-2 items-center'>
                   <Link to={`/product/${item._id}`} className="text-blue-500 "><IoEye/></Link>
-                  <Link to={`/admin/product/${item._id}`} 
+                  <Link to={`/admin/product/${item._id}`}
                   state={{product: item}}
                   className="text-blue-500 hover:underline"><IoPencil/></Link>
+                  {/* [VTON] Generate / regenerate the on-model preview. Doubles as a
+                      backfill for older products and a retry when generation failed. */}
+                  <button
+                    onClick={() => handleGeneratePreview(item._id)}
+                    disabled={generatingId === item._id}
+                    title={
+                      item.modelPreviewMale || item.modelPreviewFemale
+                        ? 'Regenerate on-model preview'
+                        : 'Generate on-model preview'
+                    }
+                    className={`${
+                      item.modelPreviewMale || item.modelPreviewFemale
+                        ? 'text-green-600'
+                        : 'text-gray-500'
+                    } hover:underline disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    <MdCheckroom className={generatingId === item._id ? 'animate-pulse' : ''} />
+                  </button>
                   <button
                     onClick={() => handleDeleteClick(item._id)}
                     className="text-red-500 hover:underline"

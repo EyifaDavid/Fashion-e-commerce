@@ -35,6 +35,16 @@ export const productApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Product'],
     }),
+    // [VTON] Admin: (re)generate a product's pre-generated on-model preview(s).
+    // The backend responds 202 immediately and generates in the background, so the
+    // new image appears on a later refetch (a minute or two later), not in this response.
+    generateProductPreview: builder.mutation({
+      query: ({ id, force = false }) => ({
+        url: `/products/${id}/generate-preview${force ? '?force=true' : ''}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Product'],
+    }),
   }),
 });
 
@@ -45,4 +55,5 @@ export const {
   useAddProductMutation,
   useDeleteProductMutation,
   useUpdateProductMutation,
+  useGenerateProductPreviewMutation,
 } = apiSlice;
