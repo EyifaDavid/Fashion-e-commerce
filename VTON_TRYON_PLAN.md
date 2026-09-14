@@ -10,7 +10,8 @@
 
 - [x] Backend deps installed (`@gradio/client` 2.5.1, `express-rate-limit` 8.7.0)
 - [x] `garmentImage` field added to Product model + accepted in add/update controllers
-- [x] `backend/utils/hfTryon.js` — Kolors Space caller (timeout, cancel, error classes, migration flags)
+- [x] `backend/utils/hfTryon.js` — Kolors + CatVTON dual-provider caller (timeout, cancel, error classes, migration flags)
+- [x] **Dual-provider split (2026-09-14):** per-customer photo try-on → `Kwai-Kolors/Kolors-Virtual-Try-On` (`provider: "kolors"`, no ZeroGPU quota); product preview generation → `zhengchong/CatVTON` p2p (`provider: "catvton"`, mask-free, subject to free ZeroGPU daily quota)
 - [x] `backend/controllers/tryonController.js` — validation, garment lookup, no persistence
 - [x] `backend/middleware/tryonRateLimit.js` — per-user/IP limiter
 - [x] `backend/routes/tryonRoutes.js` — rewritten (protect + limit + upload + controller)
@@ -75,7 +76,10 @@ index call ever stops working:
 # Create at https://huggingface.co/settings/tokens (read scope is enough). Format: hf_xxx
 HF_TOKEN=
 # Which Space to call. Override to point at your own duplicated Space if the public one closes its API.
-HF_SPACE_ID=Kwai-Kolors/Kolors-Virtual-Try-On
+# Two providers are used (see §0): Kolors for per-customer try-on, CatVTON for preview generation.
+HF_SPACE_ID=zhengchong/CatVTON            # CatVTON (preview generation, mask-free p2p)
+HF_KOLORS_SPACE_ID=Kwai-Kolors/Kolors-Virtual-Try-On   # Kolors (per-customer try-on, no ZeroGPU quota)
+HF_PROVIDER=catvton                       # default when a caller passes no explicit provider
 ```
 
 **Frontend** already exposes the API base via `VITE_APP_BASE_URL` (RTK Query uses `VITE_APP_BASE_URL + "/api"`).

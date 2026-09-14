@@ -17,10 +17,13 @@
 import { Client, handle_file } from "@gradio/client";
 
 // --- Global provider config (all overridable via env) ---
-const HF_PROVIDER = process.env.HF_PROVIDER || "catvton"; // "catvton" | "kolors"
-const HF_SPACE_ID =
-  process.env.HF_SPACE_ID ||
-  (HF_PROVIDER === "kolors" ? "Kwai-Kolors/Kolors-Virtual-Try-On" : "zhengchong/CatVTON");
+// Two Spaces serve different callers: model-preview generation uses CatVTON
+// (mask-free), while the per-customer photo try-on uses Kolors (a regular GPU
+// Space WITHOUT the strict free ZeroGPU daily quota that CatVTON is subject to).
+// HF_PROVIDER sets the default when a caller doesn't pass `provider`.
+const HF_PROVIDER = process.env.HF_PROVIDER || "catvton"; // default "catvton" | "kolors"
+const CATVTON_SPACE_ID = process.env.HF_SPACE_ID || "zhengchong/CatVTON";
+const KOLORS_SPACE_ID = process.env.HF_KOLORS_SPACE_ID || "Kwai-Kolors/Kolors-Virtual-Try-On";
 const HF_TOKEN = process.env.HF_TOKEN || undefined; // optional; improves shared-queue priority
 
 // --- CatVTON (zhengchong/CatVTON) tuning ---
@@ -148,40 +151,42 @@ function extractImageUrl(output) {
  * @param {{ personBuffer: Buffer, personMime?: string, garmentUrl: string }} args
  * @returns {Promise<{ imageUrl: string, seed?: number }>}
  */
-export async function runTryOn({ personBuffer, personMime, garmentUrl }) {
-  const provider = HF_PROVIDER === "kolors" ? "kolors" : "catvton";
+export async function runTryOn({ personBuffer, personMime, garmentUrl, provider }) {
+  // provider: "catvton" (preview generation) | "kolors" (per-customer photos).
+  // Defaults to HF_PROVIDER so a whole-deploy switch is still one env var.
+  const resolvedProvider = provider || HF_PROVIDER || "catvton";
+  const spaceId = resolvedProvider === "kolors"
+    ? KOLORS_SPACE_ID
+    : CATVTON_SPACE_ID;
 
   // Connect (this also wakes a sleeping Space).
   let client;
   try {
-    client = await Client.connect(HF_SPACE_ID, HF_TOKEN ? { hf_token: HF_TOKEN } : {});
+    client = await Client.connect(spaceId, HF_TOKEN ? { hf_token: HF_TOKEN } : {});
   } catch (err) {
     throw new TryOnUnavailableError(`connect failed: ${err?.message || err}`);
   }
 
   const { endpoint, payload } =
-    provider === "kolors"
+    resolvedProvider === "kolors"
       ? buildKolorsPayload(personBuffer, personMime, await fetchGarment(garmentUrl))
       : buildCatVtonPayload(personBuffer, personMime, garmentUrl);
 
   let submission;
   try {
-    if (provider === "kolors") {
-      submission = client.submit(endpoint, payload, null, null, true);
-    } else {
-      // CatVTON is called by API name; prepend "/" so it resolves via api_map.
-      // 5th arg all_events=true so `status:error` messages are surfaced (else a
-      // Space rejection like "ZeroGPU quota exceeded" is silently dropped and all
-      // we ever see is the generic "no image in response").
-      submission = client.submit(`/${endpoint}`, payload, null, null, true);
-    }
+    // CatVTON is called by API name (prepended "/" so it resolves via api_map);
+    // Kolors has no api_name (show_api=false) so it's called by fn index.
+    // 5th arg all_events=true so `status:error` messages are surfaced (else a
+    // Space rejection like "ZeroGPU quota exceeded" is silently dropped and all
+    // we ever see is the generic "no image in response").
+    submission = client.submit(resolvedProvider === "kolors" ? endpoint : `/${endpoint}`, payload, null, null, true);
   } catch (err) {
     // e.g. the Space's API is closed / the endpoint was renamed / a stale HF_SPACE_ID
     // points at the wrong Space. Name the Space in the error so misconfig is obvious.
     const hint = /no endpoint matching/i.test(err?.message || "")
-      ? ` (is HF_SPACE_ID=${HF_SPACE_ID} exposing ${endpoint}?)`
+      ? ` (is HF_SPACE_ID=${spaceId} exposing ${endpoint}?)`
       : "";
-    throw new TryOnUnavailableError(`submit to ${HF_SPACE_ID} failed: ${err?.message || err}${hint}`);
+    throw new TryOnUnavailableError(`submit to ${spaceId} failed: ${err?.message || err}${hint}`);
   }
 
   return await new Promise((resolve, reject) => {

@@ -91,6 +91,7 @@ async function generateModelPreviewInner(productId, canonical) {
     personBuffer,
     personMime: ref.mime,
     garmentUrl,
+    provider: "catvton", // previews use CatVTON (mask-free); per-customer photos use Kolors
   });
 
   // HF result URLs 404 within seconds; rehost to a durable Cloudinary URL.

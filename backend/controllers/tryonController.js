@@ -48,6 +48,7 @@ export const tryOn = async (req, res) => {
       personBuffer: file.buffer,
       personMime: file.mimetype,
       garmentUrl,
+      provider: "kolors", // per-customer photos: Kolors has no ZeroGPU quota; CatVTON is reserved for previews
     });
 
     // HF file URLs 404 quickly (evicted from the Space's /tmp), so serve the result
