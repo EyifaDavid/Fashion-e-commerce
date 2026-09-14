@@ -3,10 +3,10 @@
 // Fetch an image from a (possibly ephemeral) source URL and store the bytes in
 // Cloudinary, returning a durable secure_url.
 //
-// Why this exists: the free Kolors HF Space returns result URLs that live in a
-// worker's /tmp/gradio dir and 404 within seconds (load-balanced Space). Rehosting
-// the bytes to Cloudinary makes the URL durable and reachable from every
-// device/browser (incl. iOS).
+// Why this exists: the free HF Space (CatVTON, previously Kolors) returns result
+// URLs that live in a worker's /tmp/gradio dir and 404 within seconds (load-balanced
+// Space). Rehosting the bytes to Cloudinary makes the URL durable and reachable
+// from every device/browser (incl. iOS).
 //
 // Shared by:
 //   - the per-customer try-on flow  → folder "tryon-results" (ephemeral display)
