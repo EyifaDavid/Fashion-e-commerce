@@ -60,10 +60,23 @@ export function resolveGarment(product) {
  * @param {string} gender  "Male" | "Female" (aliases accepted)
  * @returns {Promise<string>} the durable Cloudinary URL that was stored
  */
-export async function generateModelPreview(productId, gender) {
+export async function generateModelPreview(productId, gender, { mode = "single" } = {}) {
   const canonical = normalizeGender(gender);
   if (!canonical) throw new Error(`unsupported gender: ${gender}`);
 
+  const trackKey = `${productId}:${canonical}`;
+  trackerStart(trackKey, productId, canonical, mode);
+  try {
+    const durableUrl = await generateModelPreviewInner(productId, canonical);
+    trackerEnd(trackKey, true);
+    return durableUrl;
+  } catch (err) {
+    trackerEnd(trackKey, false, err);
+    throw err;
+  }
+}
+
+async function generateModelPreviewInner(productId, canonical) {
   const product = await Product.findById(productId).select("images garmentImage name");
   if (!product) throw new Error("product not found");
 
@@ -88,6 +101,88 @@ export async function generateModelPreview(productId, gender) {
   return durableUrl;
 }
 
+// ---------------------------------------------------------------------------
+// In-memory generation tracker (resets when the backend process restarts).
+// Lets the admin poll which previews succeeded / failed / are running, instead
+// of the fire-and-forget 202 where failures only land in console.error.
+// A single backend process is expected (see VTON_TRYON_PLAN.md §multi-instance).
+// ---------------------------------------------------------------------------
+const TRACKER_LIMIT = 400; // cap on kept item records (drop oldest finished first)
+
+const previewTracker = {
+  mode: null,       // 'single' | 'auto' | 'bulk'
+  startedAt: null,
+  finishedAt: null,
+  items: {},        // `${productId}:${gender}` -> record
+};
+
+function trackerRecount() {
+  const keys = Object.keys(previewTracker.items);
+  const working = keys.filter((k) => previewTracker.items[k].status === "working");
+  previewTracker.running = working.length > 0;
+  previewTracker.current = working[0] || null;
+  if (!previewTracker.running) previewTracker.finishedAt = new Date().toISOString();
+}
+
+function trackerStart(key, productId, gender, mode) {
+  if (!previewTracker.running) {
+    previewTracker.mode = mode;
+    previewTracker.startedAt = new Date().toISOString();
+    previewTracker.finishedAt = null;
+  }
+  // A fresh (re)generation replaces any prior record for the same key.
+  previewTracker.items[key] = {
+    productId,
+    gender,
+    status: "working", // 'working' | 'done' | 'failed'
+    error: null,
+    startedAt: new Date().toISOString(),
+    finishedAt: null,
+    ms: null,
+  };
+  // Bound memory: drop the oldest finished records beyond the cap.
+  const recordKeys = Object.keys(previewTracker.items);
+  if (recordKeys.length > TRACKER_LIMIT) {
+    const stale = recordKeys
+      .filter((k) => previewTracker.items[k].status !== "working")
+      .sort((a, b) =>
+        (previewTracker.items[a].startedAt || "").localeCompare(
+          previewTracker.items[b].startedAt || ""
+        )
+      );
+    for (const k of stale.slice(0, recordKeys.length - TRACKER_LIMIT + 1)) {
+      delete previewTracker.items[k];
+    }
+  }
+  trackerRecount();
+}
+
+function trackerEnd(key, ok, error) {
+  const rec = previewTracker.items[key];
+  if (!rec) return;
+  rec.status = ok ? "done" : "failed";
+  rec.error = ok ? null : String(error?.message || error);
+  rec.finishedAt = new Date().toISOString();
+  rec.ms = rec.startedAt ? Date.now() - new Date(rec.startedAt).getTime() : null;
+  trackerRecount();
+}
+
+/** Snapshot of the generation tracker for the admin status endpoint. */
+export function getPreviewGenerationStatus() {
+  const values = Object.values(previewTracker.items);
+  return {
+    running: previewTracker.running,
+    mode: previewTracker.mode,
+    startedAt: previewTracker.startedAt,
+    finishedAt: previewTracker.finishedAt,
+    current: previewTracker.current,
+    total: values.length,
+    done: values.filter((r) => r.status === "done").length,
+    failed: values.filter((r) => r.status === "failed").length,
+    items: previewTracker.items,
+  };
+}
+
 // Guard against overlapping runs for the same product+gender (e.g. a rapid
 // double-save, or the auto-hook racing the admin "Generate" button). In-memory /
 // per-instance — enough for a single backend process; a multi-instance deploy
@@ -101,11 +196,12 @@ const inFlight = new Set();
  * (the shared free Space is effectively single-slot; parallel calls just queue).
  *
  * @param {string} productId
- * @param {{ force?: boolean }} [opts]  force=true regenerates even if a preview
+ * @param {{ force?: boolean, mode?: string }} [opts]  force=true regenerates even if a preview
  *        already exists (use when the garment/primary image changed). Default false
- *        only fills in missing previews.
+ *        only fills in missing previews. mode labels the tracker: 'auto' (hooks),
+ *        'single' (admin button) — defaults to 'auto'.
  */
-export async function refreshProductPreviews(productId, { force = false } = {}) {
+export async function refreshProductPreviews(productId, { force = false, mode = "auto" } = {}) {
   let product;
   try {
     product = await Product.findById(productId).select(
@@ -128,7 +224,7 @@ export async function refreshProductPreviews(productId, { force = false } = {}) 
     if (inFlight.has(key)) continue;
     inFlight.add(key);
     try {
-      await generateModelPreview(productId, gender);
+      await generateModelPreview(productId, gender, { mode });
       console.log(`[modelPreview] generated ${gender} preview for product ${productId}`);
     } catch (err) {
       console.error(`[modelPreview] ${gender} preview failed for ${productId}:`, err?.message);
@@ -190,7 +286,7 @@ export async function generateAllMissingPreviews() {
         if (inFlight.has(key)) continue; // a hook/button run already has this one
         inFlight.add(key);
         try {
-          await generateModelPreview(product._id, gender);
+          await generateModelPreview(product._id, gender, { mode: "bulk" });
           console.log(`[modelPreview] bulk: generated ${gender} preview for ${product._id}`);
         } catch (err) {
           console.error(`[modelPreview] bulk: ${gender} preview failed for ${product._id}:`, err?.message);
@@ -214,4 +310,4 @@ export async function generateAllMissingPreviews() {
   };
 }
 
-export default { generateModelPreview, refreshProductPreviews, resolveGarment, generateAllMissingPreviews };
+export default { generateModelPreview, refreshProductPreviews, resolveGarment, generateAllMissingPreviews, getPreviewGenerationStatus };

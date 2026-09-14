@@ -55,6 +55,13 @@ export const productApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Product'],
     }),
+    // [VTON] Admin: poll the in-memory generation tracker. Shows per-product
+    // success/failure instead of a blind "refresh to see it".
+    getPreviewStatus: builder.query({
+      query: () => ({
+        url: `${PRODUCT_URL}/previews/status`,
+      }),
+    }),
   }),
 });
 
@@ -67,4 +74,5 @@ export const {
   useUpdateProductMutation,
   useGenerateProductPreviewMutation,
   useGenerateAllProductPreviewsMutation,
+  useGetPreviewStatusQuery,
 } = apiSlice;

@@ -1,6 +1,6 @@
 import Product from "../models/product.js";
 import cloudinary from '../utils/cloudinary.js';
-import { refreshProductPreviews, resolveGarment, generateAllMissingPreviews } from "../utils/modelPreview.js";
+import { refreshProductPreviews, resolveGarment, generateAllMissingPreviews, getPreviewGenerationStatus } from "../utils/modelPreview.js";
 
 // // GET all products
 // export const getAllProducts = async (req, res) => {
@@ -269,7 +269,7 @@ export const generateProductPreview = async (req, res) => {
       });
     }
 
-    refreshProductPreviews(id, { force }).catch((err) =>
+    refreshProductPreviews(id, { force, mode: "single" }).catch((err) =>
       console.error("[modelPreview] manual generation failed:", err?.message)
     );
 
@@ -280,5 +280,18 @@ export const generateProductPreview = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ status: false, message: "Couldn't start preview generation." });
+  }
+};
+
+// [VTON] Admin: poll the in-memory preview-generation tracker. Reports which
+// product+gender previews are working/done/failed (with the failure reason),
+// so the UI can surface "these N failed to generate" instead of a blind refresh.
+export const getPreviewStatus = async (req, res) => {
+  try {
+    const status = getPreviewGenerationStatus();
+    return res.status(200).json({ status: true, ...status });
+  } catch (error) {
+    console.error('[modelPreview] status lookup failed:', error?.message);
+    return res.status(500).json({ status: false, message: "Couldn't read preview generation status." });
   }
 };
