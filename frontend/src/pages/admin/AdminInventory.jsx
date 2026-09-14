@@ -28,10 +28,14 @@ const AdminInventory = () => {
   // per-product progress/failures and auto-refresh when a job finishes (no blind
   // "refresh to see it"). Until the deployed backend is updated, /previews/status
   // returns 404 — poll slowly in that case instead of hammering every 4s.
+  const [endpointReady, setEndpointReady] = useState(false);
   const { data: previewStatus } = useGetPreviewStatusQuery(undefined, {
-    pollingInterval: previewStatus ? 4000 : 15000,
+    pollingInterval: endpointReady ? 4000 : 15000,
     skip: typeof window === 'undefined',
   });
+  useEffect(() => {
+    if (previewStatus) setEndpointReady(true);
+  }, [previewStatus]);
   const tracker = previewStatus || {};
   const txItems = tracker.items || {};
   const lastRunning = useRef(null);

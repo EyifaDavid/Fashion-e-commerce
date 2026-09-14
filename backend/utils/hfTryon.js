@@ -173,8 +173,12 @@ export async function runTryOn({ personBuffer, personMime, garmentUrl }) {
       submission = client.submit(`/${endpoint}`, payload);
     }
   } catch (err) {
-    // e.g. the Space closed its API / endpoint no longer exists.
-    throw new TryOnUnavailableError(`submit failed: ${err?.message || err}`);
+    // e.g. the Space's API is closed / the endpoint was renamed / a stale HF_SPACE_ID
+    // points at the wrong Space. Name the Space in the error so misconfig is obvious.
+    const hint = /no endpoint matching/i.test(err?.message || "")
+      ? ` (is HF_SPACE_ID=${HF_SPACE_ID} exposing ${endpoint}?)`
+      : "";
+    throw new TryOnUnavailableError(`submit to ${HF_SPACE_ID} failed: ${err?.message || err}${hint}`);
   }
 
   return await new Promise((resolve, reject) => {
