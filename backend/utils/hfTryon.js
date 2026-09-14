@@ -167,10 +167,13 @@ export async function runTryOn({ personBuffer, personMime, garmentUrl }) {
   let submission;
   try {
     if (provider === "kolors") {
-      submission = client.submit(endpoint, payload);
+      submission = client.submit(endpoint, payload, null, null, true);
     } else {
       // CatVTON is called by API name; prepend "/" so it resolves via api_map.
-      submission = client.submit(`/${endpoint}`, payload);
+      // 5th arg all_events=true so `status:error` messages are surfaced (else a
+      // Space rejection like "ZeroGPU quota exceeded" is silently dropped and all
+      // we ever see is the generic "no image in response").
+      submission = client.submit(`/${endpoint}`, payload, null, null, true);
     }
   } catch (err) {
     // e.g. the Space's API is closed / the endpoint was renamed / a stale HF_SPACE_ID
@@ -209,6 +212,13 @@ export async function runTryOn({ personBuffer, personMime, garmentUrl }) {
             if (text.includes("queue") || text.includes("full") || text.includes("too many")) {
               return finish(reject, new TryOnBusyError(msg.message || "queue full"));
             }
+            if (text.includes("quota") || text.includes("rate limit")) {
+              // ZeroGPU quota: the free Space's daily allowance is exhausted.
+              return finish(reject, new TryOnUnavailableError(
+                "The free AI service has hit its daily quota. Ask the admin to set HF_TOKEN, or try again tomorrow."
+              ));
+            }
+            // Surface the Space's real error text (e.g. an image the Space couldn't read).
             return finish(reject, new TryOnUnavailableError(msg.message || "space error"));
           }
         }
