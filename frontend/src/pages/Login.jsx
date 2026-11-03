@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
 import Button from "../components/Button";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import { tokenIsValid } from "../../../backend/utils/token";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 
 const Login = () => {
-  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -20,7 +20,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [demoCode, setDemoCode] = useState("");
-  const isDemoUi = import.meta.env.VITE_DEMO_MODE === "true" || !!demoCode;
   const API = import.meta.env.VITE_API_BASE_URL;
 
   const {
@@ -31,13 +30,21 @@ const Login = () => {
   } = useForm();
 
   // Redirect if user is already logged in
-useEffect(() => {
-  const token = Cookies.get("token");
+  useEffect(() => {
+    const token = Cookies.get("token");
 
-  if (token && tokenIsValid(token)) {
-    navigate("/Landing");
-  }
-}, [navigate]);
+    if (token && tokenIsValid(token)) {
+      navigate("/Landing");
+    }
+  }, [navigate]);
+
+  // Show a toast once when a background 401 redirected the user here.
+  useEffect(() => {
+    if (sessionStorage.getItem("sessionExpired") === "1") {
+      sessionStorage.removeItem("sessionExpired");
+      toast.error("Session expired. Please log in again.");
+    }
+  }, []);
 
   // Step 1: Submit email for code
   const handleEmailSubmit = async (data) => {
@@ -98,7 +105,8 @@ useEffect(() => {
       <div className="w-full md:1/3 p-4 md:p-1 flex flex-col justify-center items-center gap-4">
         <div className="w-full gap-0.5 flex flex-row justify-center items-center">
           <img src="/ubiquitous-logo.png" alt="UBIQUITOUS" className="w-20 h-auto" />
-          <p className="flex flex-col gap-0 md:gap-4 text-2xl md:text-5xl 2xl:text-6xl font-black text-center text-black">
+          {/* [NORTH] Use the supplied heading font for the login wordmark too. */}
+          <p className="brand-wordmark flex flex-col gap-0 md:gap-4 text-2xl md:text-5xl 2xl:text-6xl font-black text-center text-black">
             UBIQUITOUS
           </p>
         </div>
@@ -107,12 +115,6 @@ useEffect(() => {
           onSubmit={handleSubmit(step === "email" ? handleEmailSubmit : handleCodeSubmit)}
           className="form-container w-full md:w-[700px] flex flex-col gap-y-6 bg-white px-10 pt-10 pb-14"
         >
-          {false && isDemoUi && (
-            <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-              Demo mode active: if email delivery fails, OTP will be shown on this page.
-            </div>
-          )}
-
           <div className="">
             <p className="text-black text-3xl font-bold text-start">
               {step === "email" ? "Log in" : "Enter Code"}

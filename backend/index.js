@@ -11,7 +11,6 @@ import dbConnection from "./utils/index.js";
 import cookieParser from "cookie-parser";
 import { errorHandler, routeNotFound } from "./middleware/errorMiddleware.js";
 import routes from "./routes/index.js";
-import Replicate from "replicate";
 
 // const express = require('express');
 // const cors = require('cors');

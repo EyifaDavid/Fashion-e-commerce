@@ -1,0 +1,35 @@
+{
+  "checks": [
+    "Initial home alias skips the transition; desktop grid is 12 × 8",
+    "Supplied web video plays muted, looping, inline at 1080 × 2048",
+    "Tiles snap; route commits and scroll resets under full cover; desktop finishes under 800ms",
+    "New title mask completes and clears its clip-path without blocking clicks",
+    "Browser back/forward skips block animation",
+    "Mobile 6 × 10 grid covers the viewport without gaps and finishes under 800ms",
+    "Interrupted navigation lands on the latest route and releases the blocker",
+    "Turning reduced motion on mid-transition releases cover and commits the requested route",
+    "Reduced motion uses a plain fade with no tiles or title mask",
+    "No browser runtime exceptions"
+  ],
+  "measurements": {
+    "video": {
+      "width": 1080,
+      "height": 2048,
+      "duration": 12.96,
+      "muted": true,
+      "loop": true,
+      "paused": false,
+      "playsInline": true
+    },
+    "desktopMs": 747,
+    "mobileMs": 701
+  },
+  "screenshots": [
+    "hero-video-desktop.png",
+    "block-cover-desktop.png",
+    "block-product-desktop.png",
+    "block-cover-mobile.png",
+    "hero-video-mobile.png"
+  ],
+  "errors": []
+}

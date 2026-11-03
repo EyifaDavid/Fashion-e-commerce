@@ -6,6 +6,11 @@ import { toast } from 'sonner';
 import { useGetProductsQuery } from '../redux/slices/api/productApiSlice';
 import { addToCart } from '../redux/slices/cartSlice';
 import Button from '../components/Button';
+// [NORTH] Use the same branded loading state as the collection.
+import Loading from '../components/Loader';
+import CollectionFilters from '../components/CollectionFilters';
+// [NORTH] Use the same Ghana cedi formatter as the catalogue.
+import { formatMoney as priceFmt } from '../utils/money';
 
 // [VTON] Wardrobe / dressing-room.
 // A dedicated section where shoppers pick garments and see them on a FIXED reference
@@ -20,9 +25,6 @@ const GENDERS = [
   { key: 'Female', label: 'Female', field: 'modelPreviewFemale' },
   { key: 'Male', label: 'Male', field: 'modelPreviewMale' },
 ];
-
-const priceFmt = (n) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n || 0);
 
 const Wardrobe = () => {
   const { data: response, isLoading } = useGetProductsQuery();
@@ -111,11 +113,7 @@ const Wardrobe = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
-      </div>
-    );
+    return <Loading page label="Loading wardrobe…" />;
   }
 
   const noLooksAnywhere = previewCounts.Female === 0 && previewCounts.Male === 0;
@@ -135,7 +133,8 @@ const Wardrobe = () => {
             <button
               key={g.key}
               onClick={() => setModelGender(g.key)}
-              className={`px-4 py-1.5 rounded-full text-sm border transition ${
+              aria-pressed={modelGender === g.key}
+              className={`px-4 min-h-11 text-sm border ${
                 modelGender === g.key
                   ? 'bg-black text-white border-black'
                   : 'bg-white text-black border-gray-300 hover:bg-gray-100'
@@ -167,23 +166,8 @@ const Wardrobe = () => {
         <>
           {/* Category chips */}
           {categories.length > 1 && (
-            <div className="mb-6 overflow-x-auto">
-              <div className="flex gap-2 md:gap-3 min-w-max">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setCategory(cat)}
-                    className={`px-4 py-1.5 rounded-full text-sm border whitespace-nowrap capitalize ${
-                      category === cat
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-black border-gray-300 hover:bg-gray-100'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CollectionFilters options={categories} value={category} onChange={setCategory}
+              total={rack.length} label="Filter wardrobe" />
           )}
 
           <div className="flex flex-col lg:flex-row gap-6">

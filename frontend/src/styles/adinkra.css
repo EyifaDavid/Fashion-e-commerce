@@ -1,0 +1,66 @@
+/* [NORTH] Strong campaign accents and a nearly blended ground elsewhere. Background
+   images cannot take focus, intercept clicks, or enter the accessibility tree. */
+.site-adinkra {
+  --adinkra-pattern: url("/patterns/adinkra.svg");
+  --adinkra-pattern-light: url("/patterns/adinkra-light.svg");
+  --adinkra-pattern-subtle: url("/patterns/adinkra-subtle.svg");
+  --adinkra-pattern-banner: url("/patterns/adinkra-banner.svg");
+  --adinkra-pattern-footer: url("/patterns/adinkra-footer.svg");
+  --adinkra-repeat-size: 360px 360px;
+}
+
+/* [NORTH] One faint layer on opaque page surfaces; no texture on photo surfaces. */
+.site-adinkra,
+.site-adinkra :where(.north-page, .north-rack-section, [aria-labelledby="rack-title"]),
+.site-adinkra :where(div, section, main, header):is(
+  [class~="bg-white"], [class~="bg-gray-100"], [class~="bg-neutral-100"],
+  [class~="bg-[#F5F5F5]"], [class~="bg-gray-500"]
+) {
+  background-image: var(--adinkra-pattern-subtle);
+  background-size: var(--adinkra-repeat-size);
+}
+
+/* [NORTH] Keep the four campaign areas' stronger treatment. */
+.site-adinkra :where(.north-offer, .north-promotions) {
+  background-image: var(--adinkra-pattern);
+  background-size: var(--adinkra-repeat-size);
+}
+
+/* [NORTH] Exactly two complete rows, with Sankofa aligned alongside its peers. */
+.site-adinkra footer {
+  overflow-wrap: anywhere;
+  background-image: var(--adinkra-pattern-footer), var(--adinkra-pattern-footer);
+  background-size: 360px 100px;
+  background-repeat: repeat-x;
+  background-position: left 20%, left 80%;
+}
+/* [NORTH] One larger row across the whole strip; all three symbols share a baseline. */
+.site-adinkra .north-promotions {
+  background-image: var(--adinkra-pattern-banner);
+  background-size: 360px 100px;
+  background-position: center;
+  background-repeat: repeat-x;
+}
+
+/* [NORTH] The hero's pattern sits over the media and under its text/navigation. */
+.site-adinkra .north-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--adinkra-pattern-light);
+  background-size: var(--adinkra-repeat-size);
+}
+
+.north-rack-section { padding-bottom: 24px; }
+.north-rack-header .north-section-heading { margin-bottom: 0; }
+
+@media (max-width: 767px) {
+  .site-adinkra { --adinkra-repeat-size: 280px 280px; }
+  .north-rack-section { padding-bottom: 12px; }
+}
+
+@media (forced-colors: active) {
+  .site-adinkra { --adinkra-pattern: none; --adinkra-pattern-light: none; --adinkra-pattern-subtle: none; --adinkra-pattern-banner: none; --adinkra-pattern-footer: none; }
+}

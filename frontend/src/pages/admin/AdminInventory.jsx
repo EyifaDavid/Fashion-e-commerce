@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MdCheckroom } from 'react-icons/md';
+import { MdCheckroom, MdImage } from 'react-icons/md';
 import {
   useDeleteProductMutation,
   useGetProductsQuery,
@@ -11,8 +11,19 @@ import {
 import { IoEye, IoPencil, IoTrash, IoReload } from 'react-icons/io5';
 import ConfirmModal from '../../components/confirmModal';
 import { toast } from 'sonner';
+// [NORTH] Inventory prices use the storefront's currency.
+import { formatMoney } from '../../utils/money';
 
 const AdminInventory = () => {
+  // [RACK] Auto-generation removed; rack images are now uploaded manually.
+  const rackItems = {};
+  const rackTracker = { running: false, current: null };
+  const rackFailedKeys = [];
+  const missingRackImages = 0;
+  const rackJobBusy = false;
+  const handleGenerateRackImage = () => {};
+  const handleBulkGenerateRackImages = () => {};
+  const retryRackFailed = () => {};
   const { data: response, isLoading, refetch } = useGetProductsQuery();
   const [showModal, setShowModal] = useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState(null);
@@ -49,12 +60,18 @@ const AdminInventory = () => {
     lastRunning.current = running;
   }, [tracker.running, refetch]);
 
+  // [RACK] Auto-generation removed; rack images are uploaded manually.
+
   // Failed previews (with reason) from the tracker, most recent first.
   const failedKeys = Object.keys(txItems).filter((k) => txItems[k].status === 'failed');
   const productNameById = Object.fromEntries(products.map((p) => [p._id, p.name]));
   const jobBusy = Boolean(tracker.running) || bulkGenerating;
   const progress =
     tracker.total > 0 ? Math.round(((tracker.done + tracker.failed) / tracker.total) * 100) : 0;
+  const rackProgress =
+    rackTracker.total > 0
+      ? Math.round(((rackTracker.done + rackTracker.failed) / rackTracker.total) * 100)
+      : 0;
 
   const retryFailed = async (key) => {
     const rec = txItems[key];
@@ -72,6 +89,7 @@ const AdminInventory = () => {
       }
     }
   };
+
 
   const handleDelete = async () => {
     await deleteProduct(productIdToDelete);
@@ -119,6 +137,7 @@ const AdminInventory = () => {
     }
   };
 
+
   if (isLoading) return (
     <div className="flex items-center justify-center h-screen">
       <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
@@ -134,28 +153,53 @@ const AdminInventory = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <h1 className="text-2xl font-bold text-white">Inventory List</h1>
 
-        {/* [VTON] Bulk backfill: one click queues every product that's missing a preview. */}
-        <button
-          onClick={handleBulkGenerate}
-          disabled={jobBusy || missingPreviews === 0}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition ${
-            missingPreviews === 0
-              ? 'bg-gray-500 cursor-not-allowed'
-              : 'bg-black hover:bg-gray-800'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
-          title={
-            missingPreviews === 0
-              ? 'All products already have previews'
-              : `${missingPreviews} product(s) missing previews`
-          }
-        >
-          <MdCheckroom className={jobBusy ? 'animate-pulse' : ''} size={16} />
-          {jobBusy
-            ? 'Generating…'
-            : missingPreviews === 0
-              ? 'All previews generated'
-              : `Generate ${missingPreviews} missing previews`}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* [VTON] Bulk backfill: one click queues every product that's missing a preview. */}
+          <button
+            onClick={handleBulkGenerate}
+            disabled={jobBusy || missingPreviews === 0}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition ${
+              missingPreviews === 0
+                ? 'bg-gray-500 cursor-not-allowed'
+                : 'bg-black hover:bg-gray-800'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            title={
+              missingPreviews === 0
+                ? 'All products already have previews'
+                : `${missingPreviews} product(s) missing previews`
+            }
+          >
+            <MdCheckroom className={jobBusy ? 'animate-pulse' : ''} size={16} />
+            {jobBusy
+              ? 'Generating…'
+              : missingPreviews === 0
+                ? 'All previews generated'
+                : `Generate ${missingPreviews} missing previews`}
+          </button>
+
+          {/* [RACK] Bulk backfill for transparent rack images. */}
+          <button
+            onClick={handleBulkGenerateRackImages}
+            disabled={rackJobBusy || missingRackImages === 0}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition ${
+              missingRackImages === 0
+                ? 'bg-gray-500 cursor-not-allowed'
+                : 'bg-black hover:bg-gray-800'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            title={
+              missingRackImages === 0
+                ? 'All products already have rack images'
+                : `${missingRackImages} product(s) missing rack images`
+            }
+          >
+            <MdImage className={rackJobBusy ? 'animate-pulse' : ''} size={16} />
+            {rackJobBusy
+              ? 'Generating rack images…'
+              : missingRackImages === 0
+                ? 'All rack images generated'
+                : `Generate ${missingRackImages} rack images`}
+          </button>
+        </div>
       </div>
 
       {/* [VTON] Live generation progress + failures, polled from the backend tracker. */}
@@ -183,6 +227,30 @@ const AdminInventory = () => {
         </div>
       )}
 
+      {/* [RACK] Live rack-image progress from the same tracker pattern. */}
+      {rackJobBusy && (
+        <div className="mb-4 rounded-lg border border-gray-700 bg-gray-900 p-3 text-sm text-white">
+          <div className="flex items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-2">
+              <MdImage className="animate-pulse" size={16} />
+              Generating rack images… {rackTracker.done || 0} done, {rackTracker.failed || 0} failed
+            </span>
+            <span className="text-gray-400">{rackProgress}%</span>
+          </div>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-700">
+            <div
+              className="h-full bg-green-500 transition-all"
+              style={{ width: `${rackProgress}%` }}
+            />
+          </div>
+          {rackTracker.current && (
+            <p className="mt-2 text-xs text-gray-400">
+              Currently: {productNameById[rackTracker.current] || 'product'}
+            </p>
+          )}
+        </div>
+      )}
+
       {failedKeys.length > 0 && (
         <div className="mb-4 rounded-lg border border-red-900 bg-red-950/40 p-3 text-sm text-red-200">
           <p className="mb-2 font-medium">
@@ -200,6 +268,34 @@ const AdminInventory = () => {
                   </span>
                   <button
                     onClick={() => retryFailed(key)}
+                    className="inline-flex items-center gap-1 rounded bg-red-700/60 px-2 py-1 text-white hover:bg-red-600"
+                  >
+                    <IoReload size={12} /> Retry
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {/* [RACK] Per-product rack-image failures + retry. */}
+      {rackFailedKeys.length > 0 && (
+        <div className="mb-4 rounded-lg border border-red-900 bg-red-950/40 p-3 text-sm text-red-200">
+          <p className="mb-2 font-medium">
+            {rackFailedKeys.length} rack image(s) failed to generate. Retry to regenerate just those.
+          </p>
+          <ul className="space-y-1">
+            {rackFailedKeys.map((key) => {
+              const rec = rackItems[key];
+              return (
+                <li key={key} className="flex items-center justify-between gap-2 text-xs">
+                  <span>
+                    {productNameById[rec.productId] || 'Product'}
+                    {rec.error ? <span className="ml-2 text-red-400/70">— {rec.error}</span> : null}
+                  </span>
+                  <button
+                    onClick={() => retryRackFailed(key)}
                     className="inline-flex items-center gap-1 rounded bg-red-700/60 px-2 py-1 text-white hover:bg-red-600"
                   >
                     <IoReload size={12} /> Retry
@@ -244,6 +340,8 @@ const AdminInventory = () => {
               const rowWorking = tracked.some((r) => r.status === 'working');
               const rowFailed = tracked.some((r) => r.status === 'failed');
               const rowDone = tracked.some((r) => r.status === 'done');
+              const rackRec = null;
+              const rackRowBusy = false;
               return (
               <tr key={item._id} className="border-b hover:bg-gray-50">
                 <td className="p-3 flex items-center gap-2 overflow-hidden">
@@ -263,9 +361,23 @@ const AdminInventory = () => {
                         {rowWorking ? '● generating' : rowFailed ? '● failed' : '● done'}
                       </span>
                     )}
+                    {/* [RACK] Live rack-image state for this product. */}
+                    {rackRec && (
+                      <span
+                        className={`text-[10px] uppercase tracking-wide ${
+                          rackRec.status === 'working'
+                            ? 'text-yellow-600'
+                            : rackRec.status === 'failed'
+                              ? 'text-red-600'
+                              : 'text-green-600'
+                        }`}
+                      >
+                        rack: ● {rackRec.status === 'working' ? 'generating' : rackRec.status}
+                      </span>
+                    )}
                   </div>
                 </td>
-                <td className="p-3">${item.price}</td>
+                <td className="p-3">{formatMoney(item.price)}</td>
                 <td className="p-3">{item.stock}</td>
                 <td className="p-3">{item.category || '-'}</td>
                 <td className="p-3">{item.genders?.join(', ') || '-'}</td>
@@ -294,6 +406,23 @@ const AdminInventory = () => {
                       } hover:underline disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       <MdCheckroom className={generatingId === item._id ? 'animate-pulse' : ''} />
+                    </button>
+                    {/* [RACK] Generate / regenerate this product's transparent rack cutout. */}
+                    <button
+                      onClick={() =>
+                        handleGenerateRackImage(item._id, Boolean(item.rackFrontImage))
+                      }
+                      disabled={rackRowBusy}
+                      title={
+                        item.rackFrontImage
+                          ? 'Regenerate rack image'
+                          : 'Generate rack image'
+                      }
+                      className={`${
+                        item.rackFrontImage ? 'text-green-600' : 'text-gray-500'
+                      } hover:underline disabled:opacity-40 disabled:cursor-not-allowed`}
+                    >
+                      <MdImage className={rackRowBusy ? 'animate-pulse' : ''} />
                     </button>
                     <button
                       onClick={() => handleDeleteClick(item._id)}

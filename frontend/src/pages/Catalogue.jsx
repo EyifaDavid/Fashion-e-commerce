@@ -1,201 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import Button from '../components/Button';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../redux/slices/cartSlice';
-import { MdOutlineShoppingBag } from 'react-icons/md';
-import TryOnButton from '../components/TryOnButton';
-import { useGetProductByIdQuery } from '../redux/slices/api/productApiSlice';
-import { toast } from 'sonner';
-import store from '../redux/store';
+// [NORTH] Two-column photography with sticky, quiet product details.
+import { useMemo, useRef, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import TryOnButton from "../components/TryOnButton";
+import NorthImage from "../components/north/NorthImage";
+import RevealGrid from "../components/RevealGrid";
+// [NORTH] Reserve page space while product data arrives.
+import Loading from "../components/Loader";
+import { addToCart } from "../redux/slices/cartSlice";
+import { useGetProductByIdQuery, useGetProductsQuery } from "../redux/slices/api/productApiSlice";
 
-const ProductDetail = () => {
+// [NORTH] One currency and readable labels across product options.
+import { formatMoney as money } from "../utils/money";
+import { colourName } from "../utils/colour";
+
+export default function Catalogue() {
   const { id } = useParams();
-  const { data, isLoading, error } = useGetProductByIdQuery(id);
+  const location = useLocation();
+  // [NORTH] New products reset choices; refreshing the same product preserves them.
+  return <ProductDetails key={id} id={id} initialColor={location.state?.selectedColor} />;
+}
+
+function ProductDetails({ id, initialColor }) {
+  const { data, isLoading, error, refetch } = useGetProductByIdQuery(id);
+  const { data: catalogue } = useGetProductsQuery();
   const product = data?.data;
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const [colorChoice, setSelectedColor] = useState(initialColor || "");
+  const [sizeChoice, setSelectedSize] = useState("");
+  const [imageChoice, setSelectedImage] = useState("");
+  const [status, setStatus] = useState("idle");
+  const pending = useRef(false);
+  const selectedColor = product?.colors?.includes(colorChoice) ? colorChoice : product?.colors?.[0] || "";
+  const selectedSize = product?.sizes?.includes(sizeChoice) ? sizeChoice : product?.sizes?.[0] || "";
 
-
-  // Local state for selected options
-  const [selectedImage, setSelectedImage] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-
-  // Set defaults when product is loaded
-  useEffect(() => {
-    if (product) {
-      // [VTON] Default to the pre-generated on-model preview when one exists (static image,
-      // instant — no API call, no wait), otherwise the regular first product photo.
-      const defaultPreview = product.modelPreviewMale || product.modelPreviewFemale || '';
-      setSelectedImage(defaultPreview || product.images?.[0] || '');
-      setSelectedColor(product.colors?.[0] || '');
-      setSelectedSize(product.sizes?.[0] || '');
-    }
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    const both = Boolean(product.modelPreviewMale && product.modelPreviewFemale);
+    const photos = [
+      ...(product.modelPreviewMale ? [{ image: product.modelPreviewMale, caption: both ? "Male" : "On model" }] : []),
+      ...(product.modelPreviewFemale ? [{ image: product.modelPreviewFemale, caption: both ? "Female" : "On model" }] : []),
+      ...(product.images || []).map((image) => ({ image, caption: "" })),
+    ];
+    return photos.filter((photo, index) => photos.findIndex((entry) => entry.image === photo.image) === index);
   }, [product]);
+  const selectedPhoto = gallery.find(photo => photo.image === imageChoice) || gallery[0];
+  const recommendations = useMemo(
+    () => (catalogue?.data || []).filter((entry) => entry._id !== id && !entry.isTrashed).slice(0, 4),
+    [catalogue, id]
+  );
 
-    const dispatch = useDispatch();
+  const add = async () => {
+    if (!product || pending.current) return;
+    if (product.sizes?.length && !selectedSize) { toast.error("Please select a size first"); return; }
+    const quantity = cartItems.find((item) => item.product?._id === product._id)?.quantity || 0;
+    if (product.stock === 0 || quantity >= product.stock) { toast.error("Not enough stock available"); return; }
+    pending.current = true;
+    setStatus("loading");
+    try {
+      // [NORTH] Preserve the existing product/quantity contract; variants remain local.
+      await dispatch(addToCart({ productId: product._id, quantity: 1 })).unwrap();
+      setStatus("added");
+      toast.success("Added to cart");
+    } catch {
+      setStatus("idle"); // Errors are displayed by the shared thunk.
+    } finally {
+      pending.current = false;
+    }
+  };
 
-const handleAddToCart = () => {
-  try {
-    if (!product) return;
-
-    const item = {
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      image: selectedImage,
-      countInStock: product.stock,
-    };
-
-    dispatch(addToCart({ productId: item.id, quantity: 1 }));
-    console.log('Cart items:', store.getState().cart.items);
-    toast.success("Added to cart");
-  } catch (error) {
-    console.error("Error in handleAddToCart:", error);
-    toast.error("Failed to add to cart");
-  }
-};
-
-
- if (isLoading) return (
-  <div className="flex items-center justify-center h-screen">
-    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
-  </div>
-);
-
-  if (error) return <p>Error loading product</p>;
-  if (!product) return <p>Product not found</p>;
-
-  // [VTON] On-model previews (the garment composited onto a fixed reference model) are shown
-  // FIRST, ahead of the flat product photos. They exist only for the genders that were
-  // generated; when a product has none yet, `thumbs` is just its product images and the main
-  // image defaults to images[0] — no broken image, no forced wait.
-  const bothPreviews = Boolean(product.modelPreviewMale && product.modelPreviewFemale);
-  const thumbs = [
-    ...(product.modelPreviewMale
-      ? [{ url: product.modelPreviewMale, caption: bothPreviews ? 'Male' : 'On model' }]
-      : []),
-    ...(product.modelPreviewFemale
-      ? [{ url: product.modelPreviewFemale, caption: bothPreviews ? 'Female' : 'On model' }]
-      : []),
-    ...(product.images || []).map((img) => ({ url: img, caption: '' })),
-  ];
+  if (isLoading) return <Loading page label="Loading product…" />;
+  if (error) return <div className="north-page north-section north-grid-status" role="alert">
+    <p>We couldn’t load this product.</p><button type="button" onClick={refetch}>Try again</button>
+  </div>;
+  if (!product) return <div className="north-page north-section"><p>Product not found.</p><Link to="/shop">Back to the collection</Link></div>;
 
   return (
-    <div className="flex flex-col min-h-screen md:flex-row gap-10 p-6">
-      {/* Left: Image Gallery */}
-      <div className="md:w-1/2 w-full">
-        <img
-          src={selectedImage}
-          alt={product.name}
-          onError={(e) => {
-            // [VTON] If a preview URL is ever broken/expired, degrade to the real product
-            // photo rather than showing a broken image. Guard against a fallback loop.
-            const fallback = product.images?.[0];
-            if (fallback && e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
-          }}
-          className="w-full h-[500px] object-contain rounded-xl"
-        />
-
-        {/* Thumbnails: on-model previews first (captioned), then product photos */}
-        <div className="flex justify-center flex-wrap items-start gap-3 mt-4">
-          {thumbs.map((t, index) => (
-            <button
-              key={index}
-              type="button"
-              onClick={() => setSelectedImage(t.url)}
-              className="flex flex-col items-center gap-1 cursor-pointer"
-            >
-              <img
-                src={t.url}
-                className={`w-16 h-16 object-cover rounded border-2 ${
-                  selectedImage === t.url ? 'border-black' : 'border-transparent'
-                }`}
-                alt={t.caption || `${product.name} ${index + 1}`}
-              />
-              {t.caption && (
-                <span className="text-[10px] leading-none text-gray-500 text-center max-w-[64px]">
-                  {t.caption}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Right: Product Info */}
-      <div className="md:w-1/2 w-full space-y-6">
-        <h1 className="text-3xl font-bold">{product.name}</h1>
-
-        <div className="flex items-center gap-2 text-yellow-400">
-          {'★'.repeat(Math.floor(product.rating || 0))}
-          <span className="text-sm text-gray-500">({product.rating || 0})</span>
-        </div>
-        <div>
-          <p>{product.description}</p>
-        </div>
-
-        <p className="text-xl font-semibold">
-          {new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-          }).format(product.price)}
-        </p>
-
-        {/* Colors */}
-        <div className="flex items-center gap-2">
-          {product.colors?.map((color, idx) => (
-            <span
-              key={idx}
-              onClick={() => setSelectedColor(color)}
-              className={`w-6 h-6 rounded-full border-2 cursor-pointer ${
-                selectedColor === color ? 'border-black' : 'border-transparent'
-              }`}
-              style={{ backgroundColor: color }}
-            />
-          ))}
-        </div>
-
-        {/* Sizes */}
-        <div>
-          <p>Size:</p>
-          <div className="flex flex-wrap gap-3">
-            {product.sizes?.map((size, idx) => (
-              <span
-                key={idx}
-                onClick={() => setSelectedSize(size)}
-                className={`border px-4 py-2 rounded cursor-pointer hover:bg-gray-200 ${
-                  selectedSize === size ? 'bg-black text-white' : 'border-transparent'
-                }`}
-              >
-                {size}
-              </span>
-            ))}
+    <div className="north-page">
+      <div className="north-product-page">
+        <nav className="north-product-breadcrumbs" aria-label="Breadcrumb">
+          <Link to="/shop">Collection</Link><span aria-hidden="true">/</span><span>{product.name}</span>
+        </nav>
+        <div className="north-product-layout">
+          <div className="north-product-gallery" aria-label={product.name + " photography"}>
+            <figure className="north-product-photo north-product-main">
+              <NorthImage key={selectedPhoto?.image} src={selectedPhoto?.image} fallback={product.images?.[0]}
+                fit="contain" eager alt={product.name + (selectedPhoto?.caption ? ", " + selectedPhoto.caption : ", selected view")} />
+              {selectedPhoto?.caption && <figcaption>{selectedPhoto.caption}</figcaption>}
+            </figure>
+            {gallery.length > 1 && <div className="north-product-thumbnails" role="group" aria-label="Choose product image">
+              {gallery.map((photo, index) => <button type="button" key={photo.image}
+                aria-label={"Show " + product.name + " image " + (index + 1) + (photo.caption ? ", " + photo.caption : "")}
+                aria-pressed={selectedPhoto?.image === photo.image} onClick={() => setSelectedImage(photo.image)}>
+                <NorthImage src={photo.image} fallback={product.images?.[0]} fit="contain" alt="" />
+              </button>)}
+            </div>}
+          </div>
+          <div className="north-product-details">
+            <h1>{product.name}</h1>
+            <p className="north-product-price">{money(product.price)}</p>
+            {product.rating > 0 && <p className="north-product-description" aria-label={"Rated " + product.rating + " out of 5"}>
+              {"★".repeat(Math.min(5, Math.floor(product.rating)))} ({product.rating})
+            </p>}
+            <p className="north-product-description">{product.description}</p>
+            {product.colors?.length > 0 && <fieldset className="north-product-options" disabled={status === "loading"}>
+              <legend>Colour: <strong>{colourName(selectedColor)}</strong></legend>
+              <div className="north-option-list">
+                {product.colors.map((colour) => <button type="button" key={colour} className="north-colour-option"
+                  aria-label={"Colour " + colourName(colour)} title={colourName(colour)} aria-pressed={selectedColor === colour}
+                  onClick={() => { setSelectedColor(colour); setStatus("idle"); }}>
+                  <span aria-hidden="true" style={{ backgroundColor: colour }} />
+                  {selectedColor === colour && <svg className="north-swatch-check" aria-hidden="true" viewBox="0 0 16 16"><path d="m3 8 3 3 7-7" fill="none" stroke="currentColor" strokeWidth="2" /></svg>}
+                </button>)}
+              </div>
+            </fieldset>}
+            {product.sizes?.length > 0 && <fieldset className="north-product-options" disabled={status === "loading"}>
+              <legend>Size: <strong>{selectedSize}</strong></legend>
+              <div className="north-option-list">
+                {product.sizes.map((size) => <button type="button" key={size} aria-pressed={selectedSize === size}
+                  onClick={() => { setSelectedSize(size); setStatus("idle"); }}>{size}</button>)}
+              </div>
+            </fieldset>}
+            <div className="north-product-cta">
+              <button type="button" onClick={add} disabled={status === "loading" || product.stock === 0} aria-busy={status === "loading"}>
+                {product.stock === 0 ? "Out of stock" : status === "loading" ? "Adding…" : status === "added" ? "Added" : "Add to Cart"}
+              </button>
+              <Link to="/Cart">View bag</Link>
+            </div>
+            <p role="status" className="sr-only">{status === "added" ? "Added to cart" : status === "loading" ? "Adding to cart" : ""}</p>
+            <div className="north-product-tryon">
+              <TryOnButton productId={product._id} productName={product.name} canTryOn={Boolean(product.garmentImage || product.images?.[0])} />
+            </div>
           </div>
         </div>
-
-        {/* Add to Cart */}
-        <div className="flex items-center">
-          <Button
-            label="Add to Cart"
-            className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800"
-            onClick={handleAddToCart}
-          />
-          <Link to="/cart" className="ml-4 text-black">
-            <MdOutlineShoppingBag size={30} className="hover:cursor-pointer" />
-          </Link>
-        </div>
-
-        {/* Virtual Try-On (free HF Space MVP) */}
-        <div className="pt-2">
-          <TryOnButton
-            productId={product._id}
-            productName={product.name}
-            canTryOn={Boolean(product.garmentImage || product.images?.[0])}
-          />
-        </div>
       </div>
+      {recommendations.length > 0 && <RevealGrid title="You may also like" products={recommendations} />}
     </div>
   );
-};
-
-export default ProductDetail;
+}

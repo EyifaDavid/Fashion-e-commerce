@@ -1,18 +1,21 @@
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+// [NORTH] Keep internal navigation in the router for page transitions.
+import { Link } from "react-router-dom";
 
 // components/Footer.jsx
 export default function Footer() {
   return (
-    <footer className="bg-black text-gray-100 py-10 px-6 mt-">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
+    <footer className="north-footer bg-black text-gray-100">
+      {/* [NORTH] Keep footer columns readable at tablet widths; no overflowing email. */}
+      <div className="north-footer-grid">
 
         {/* Brand */}
-        <div>
+        <div className="north-footer-brand">
           <h2 className="text-xl font-bold">UBIQUITOUS</h2>
           <p className="text-sm mt-2 text-gray-400">
             Your go-to for stylish, affordable fashion. Once you fuck with us we bet you'd keep on coming for more
           </p>
-          <div className="flex gap-2 pt-6">
+          <div className="north-footer-socials flex gap-2">
             <section class="flex justify-center items-center">
             <button
               class="group flex justify-center p-2 rounded-md drop-shadow-xl bg-gradient-to-r from-gray-800 to-black text-white font-semibold hover:translate-y-3 hover:rounded-[50%] transition-all duration-500 hover:from-[#331029] hover:to-[#310413]"
@@ -84,9 +87,9 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">Shop</h3>
           <ul className="space-y-1 text-sm text-gray-400">
-            <li><a href="shop/men">Men</a></li>
-            <li><a href="shop/women">Women</a></li>
-            <li><a href="/shop">All</a></li>
+            <li><Link to="/shop/men">Men</Link></li>
+            <li><Link to="/shop/women">Women</Link></li>
+            <li><Link to="/shop">All</Link></li>
           </ul>
         </div>
 
@@ -94,7 +97,7 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">Company</h3>
           <ul className="space-y-1 text-sm text-gray-400">
-            <li><a href="/About">About Us</a></li>
+            <li><Link to="/About">About Us</Link></li>
             <li><a href="#">Careers</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
@@ -104,7 +107,7 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">Our Information</h3>
           <ul className="space-y-1 text-sm text-gray-400">
-            <li><a href="/About">Privacy</a></li>
+            <li><Link to="/About">Privacy</Link></li>
             <li><a href="#">User Terms & Condition</a></li>
             <li><a href="#">Return Policy</a></li>
           </ul>
@@ -120,7 +123,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="mt-10 text-center text-xs text-gray-500">
+      <div className="north-footer-copyright text-center text-xs text-gray-500">
         &copy; {new Date().getFullYear()} UBIQUITOUS. All rights reserved.
       </div>
     </footer>

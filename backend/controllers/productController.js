@@ -105,6 +105,9 @@ export const addProduct = async (req, res) => {
       category,
       noColors,
       garmentImage, // [VTON] optional; falls back to images[0] at try-on time
+      rackSideImage,
+      rackFrontImage,
+      rackBackImage,
     } = req.body;
 
     if (!images || images.length === 0) {
@@ -124,6 +127,9 @@ export const addProduct = async (req, res) => {
       discount,
       noColors,
       garmentImage,
+      rackSideImage,
+      rackFrontImage,
+      rackBackImage,
     });
 
     await newProduct.save();
@@ -295,3 +301,4 @@ export const getPreviewStatus = async (req, res) => {
     return res.status(500).json({ status: false, message: "Couldn't read preview generation status." });
   }
 };
+

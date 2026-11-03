@@ -1,14 +1,22 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { MdOutlineShoppingBag } from "react-icons/md";
-import Button from "../components/Button";
+import { useEffect, useRef, useState } from "react";
+import { MdArrowOutward, MdOutlineShoppingBag } from "react-icons/md";
+import CollectionFilters from "../components/CollectionFilters";
+import useScrollReveal from "../hooks/useScrollReveal";
+// [NORTH] Match the product and wardrobe loading experience.
+import Loading from "../components/Loader";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
+// [NORTH] Display catalogue amounts in Ghana cedis.
+import { formatMoney } from "../utils/money";
+import { colourName } from "../utils/colour";
 
 export default function CategoryPage() {
   const { category } = useParams(); // "men", "women", "shop"
   const [products, setProducts] = useState([]);
+  const root = useRef(null);
+  useScrollReveal(root, products);
   const [loading, setLoading] = useState(true);
   const [subCategory, setSubCategory] = useState("All");
   const dispatch = useDispatch();
@@ -85,99 +93,40 @@ export default function CategoryPage() {
       ? products
       : products.filter((p) => p.category?.toLowerCase() === subCategory);
 
+  if (loading) return <Loading page label="Loading collection…" />;
+
+  const counts = Object.fromEntries(subCategories.map((option) => [option, option === "All" ? products.length : products.filter((product) => product.category?.toLowerCase() === option).length]));
+  const title = category === "discounts" ? "Selected offers" : category ? category[0].toUpperCase() + category.slice(1) + " collection" : "The collection";
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6 capitalize">{category} Collection</h2>
-
-      {/* Filter buttons (only show for shop page) */}
-        <div className="mb-6 overflow-x-auto">
-      <div className="flex gap-2 md:gap-4 min-w-max">
-        {subCategories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSubCategory(cat)}
-            className={`px-4 py-2 rounded-full border whitespace-nowrap ${
-              subCategory === cat
-                ? "bg-black text-white"
-                : "bg-white text-black"
-            }`}
-          >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </button>
-        ))}
-      </div>
-    </div>
-
-      
-
-      {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-gray-400"></div>
-        </div>
-      ) : filteredProducts.length === 0 ? (
-        <p>No products available.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="north-page north-collection-page" ref={root} data-north-scroll-scope>
+      <h1>{title}</h1>
+      <CollectionFilters options={subCategories} value={subCategory} onChange={setSubCategory}
+        counts={counts} total={filteredProducts.length} />
+      {filteredProducts.length === 0 ? <p className="north-grid-status">No products available.</p> : (
+        <div className="north-catalogue-grid">
           {filteredProducts.map((item) => (
-            <div
-              key={item._id}
-              className="group min-w-[300px] rounded-lg p-2 overflow-hidden hover:shadow-lg inline-block transition"
-            >
-              <Link
-                to={`/product/${item._id}`}
-                state={{ product: item }}
-                className="block bg-amber-50 rounded-t"
-              >
-                <img
-                  src={item.images?.[0] || "/placeholder.jpg"}
-                  alt={item.name}
-                  className="h-full w-full object-contain rounded-t"
-                />
+            <article key={item._id} className="north-catalogue-card" data-north-scroll>
+              <Link to={"/product/" + item._id} state={{ product: item }} className="north-catalogue-link">
+                <img src={item.images?.[0] || "/placeholder.jpg"} alt={item.name}
+                  className="north-catalogue-media" width="640" height="800" loading="lazy" />
+                <span className="north-product-peek" aria-hidden="true"><span>View piece</span><MdArrowOutward size={18} /></span>
               </Link>
-
-              <div className="bg-white p-2 relative">
-                <h3 className="mt-4 font-semibold text-lg">{item.name}</h3>
-                <div className="flex items-center">
-                  <span className="font-semibold">{item.noColors} colors</span>
-                  <span className="text-gray-500 px-4">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(item.price)}
-                  </span>
-                  <span className="hidden group-hover:flex absolute right-8 transition-all duration-300">
-                    <Button
-                      icon={
-                        <MdOutlineShoppingBag
-                          size={15}
-                          className="hover:cursor-pointer"
-                        />
-                      }
-                      className="bg-black text-white text-sm rounded-full"
-                      onClick={() => handleAddToCart(item)}
-                    />
-                  </span>
-                </div>
+              <div className="north-product-copy">
+                <div><Link to={"/product/" + item._id}><h3>{item.name}</h3></Link><p>{formatMoney(item.price)}</p></div>
+                <button type="button" className="north-quick-add" onClick={() => handleAddToCart(item)}
+                  aria-label={"Add " + item.name + " to cart"} title="Add to cart" disabled={item.stock === 0}>
+                  <MdOutlineShoppingBag size={22} aria-hidden="true" />
+                </button>
               </div>
-
-          <div className="h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4"
-              >
-            <div className="flex gap-2 mb-2">
-              {item.colors?.slice(0, 4).map((color, index) => (
-                <div
-                  key={index}
-                  className="w-4 h-4 rounded-full border cursor-pointer"
-                  style={{ backgroundColor: color }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    console.log("Selected color:", color);
-                  }}
-                />
-              ))}
-            </div>
-        </div>    
-            </div>
+              <div className="north-colour-dots" role="group" aria-label={item.name + " colours"}>
+                {item.colors?.slice(0,4).map((color) => <Link key={color} to={"/product/" + item._id}
+                  state={{selectedColor:color}} className="north-card-swatch" title={colourName(color)}
+                  aria-label={"View " + item.name + " in " + colourName(color)}>
+                  <span aria-hidden="true" style={{backgroundColor:color}} />
+                </Link>)}
+              </div>
+            </article>
           ))}
         </div>
       )}

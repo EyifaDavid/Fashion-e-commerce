@@ -66,6 +66,9 @@ const submitHandler = async (data) => {
     genders: selectedGenders,
     images: images,
     garmentImage: garmentImage, // [VTON] optional dedicated try-on garment shot
+    rackFrontImage: rackFrontImage, // [RACK]
+    rackSideImage: rackSideImage, // [RACK]
+    rackBackImage: rackBackImage, // [RACK]
     noColors: selectedColors.length.toString(),
   };
 
@@ -109,6 +112,9 @@ const submitHandler = async (data) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedGenders, setSelectedGenders] = useState([]);
     const [garmentImage, setGarmentImage] = useState(existingProduct?.garmentImage || ''); // [VTON]
+    const [rackFrontImage, setRackFrontImage] = useState(existingProduct?.rackFrontImage || ''); // [RACK]
+    const [rackSideImage, setRackSideImage] = useState(existingProduct?.rackSideImage || ''); // [RACK]
+    const [rackBackImage, setRackBackImage] = useState(existingProduct?.rackBackImage || ''); // [RACK]
 
     const handleSizeChange = (size) => {
       setSelectedSizes((prev) =>
@@ -154,6 +160,22 @@ const submitHandler = async (data) => {
         toast.error('Failed to upload garment image. Please try again.');
       }
     };
+
+    // [RACK] Optional rack images (front/side/back) for the clothing rail.
+    const makeRackUploader = (setter) => async (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      try {
+        const url = await handleUploadImage(file);
+        setter(url);
+      } catch (error) {
+        toast.error('Failed to upload rack image. Please try again.');
+      }
+    };
+    const handleAddRackFront = makeRackUploader(setRackFrontImage);
+    const handleAddRackSide = makeRackUploader(setRackSideImage);
+    const handleAddRackBack = makeRackUploader(setRackBackImage);
     const handleAddCategory = () => {
   if (newCategory && !categories.includes(newCategory)) {
     setCategories([...categories, newCategory]);
@@ -208,6 +230,9 @@ const submitHandler = async (data) => {
       setSelectedCategory(product.category || '');
       setImages(product.images || []);
       setGarmentImage(product.garmentImage || ''); // [VTON]
+      setRackFrontImage(product.rackFrontImage || ''); // [RACK]
+      setRackSideImage(product.rackSideImage || ''); // [RACK]
+      setRackBackImage(product.rackBackImage || ''); // [RACK]
       setSelectedImage(product.images?.[0] || null);
       
     };
@@ -292,7 +317,7 @@ const submitHandler = async (data) => {
     <h1 className='font-semibold mb-2'>Pricing And Stock</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           <Textbox
-            label="Price"
+            label="Price (GH₵)"
             type="number"
             name="price"
             placeholder="Price"
@@ -319,7 +344,7 @@ const submitHandler = async (data) => {
             className="rounded w-full text-sm focus:ring-2 ring-blue-500"
           />
           {/* <Textbox
-            label="Price"
+            label="Price (GH₵)"
             type="number"
             placeholder="Price"
             className="rounded w-full text-sm focus:ring-2 ring-blue-500"
@@ -409,6 +434,39 @@ const submitHandler = async (data) => {
               />
             </div>
           </div>
+
+{/* [RACK] Optional rack images for the clothing rail (front/side/back). */}
+            {[
+              { label: 'Rack front image', value: rackFrontImage, setter: setRackFrontImage, handler: handleAddRackFront, id: 'rackFrontUpload' },
+              { label: 'Rack side image', value: rackSideImage, setter: setRackSideImage, handler: handleAddRackSide, id: 'rackSideUpload' },
+              { label: 'Rack back image', value: rackBackImage, setter: setRackBackImage, handler: handleAddRackBack, id: 'rackBackUpload' },
+            ].map((r) => (
+              <div key={r.id} className="mt-6">
+                <h1 className='font-bold pb-2'>{r.label} <span className="text-xs font-normal text-gray-500">(optional)</span></h1>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={r.value || 'https://via.placeholder.com/80'}
+                    alt={r.label}
+                    className="w-20 h-20 object-contain bg-gray-100 rounded"
+                  />
+                  <label htmlFor={r.id} className="cursor-pointer border rounded px-3 py-2 text-sm hover:bg-gray-100">
+                    {r.value ? 'Change' : 'Upload'}
+                  </label>
+                  {r.value && (
+                    <button type="button" onClick={() => r.setter('')} className="text-sm text-red-500">
+                      Remove
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    id={r.id}
+                    accept=".jpg, .png, .jpeg, .webp"
+                    onChange={r.handler}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+            ))}
 
            {/*prod category section*/}
         <div className="mt-15">

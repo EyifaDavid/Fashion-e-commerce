@@ -9,6 +9,8 @@ import pHoodie from "../../assets/images/pink.png"
 import gHoodie from "../../assets/images/Green.png"
 import { FaBoxOpen, FaMoneyBill, FaUser, FaUsers } from "react-icons/fa";
 import { IoCart } from "react-icons/io5";
+// [NORTH] Cedi formatting for revenue and sample product amounts.
+import { formatMoney } from "../../utils/money";
 
 
 const Dashboard = () => {
@@ -29,11 +31,11 @@ const Dashboard = () => {
       { label: "2024-05-07", value: 1400 },
     ],
     topSelling: [
-      { id: 1, name: "Sneakers", sold: 120, price: "$2,400", image:womensPyjama },
-      { id: 2, name: "T-Shirts", sold: 95, price: "$1,425",image:bHoodie },
-      { id: 3, name: "Jeans", sold: 80, price: "$2,000",image:gHoodie },
-      { id: 4, name: "Jeans", sold: 80, price: "$2,000",image:pHoodie },
-      { id: 5, name: "Jeans", sold: 80, price: "$2,000",image:kidHoodie },
+      { id: 1, name: "Sneakers", sold: 120, price: 2400, image:womensPyjama },
+      { id: 2, name: "T-Shirts", sold: 95, price: 1425,image:bHoodie },
+      { id: 3, name: "Jeans", sold: 80, price: 2000,image:gHoodie },
+      { id: 4, name: "Jeans", sold: 80, price: 2000,image:pHoodie },
+      { id: 5, name: "Jeans", sold: 80, price: 2000,image:kidHoodie },
     ],
     users: [
       { id: 1, name: "John Doe", email: "john@example.com" },
@@ -56,7 +58,7 @@ const Dashboard = () => {
     {
       _id: "1",
       label: "Total Revenue",
-      total:  data?.totalRevenue || 0,
+      total: formatMoney(data?.totalRevenue || 0),
       icon: <FaMoneyBill />,
       bg: "bg-[#1d4ed8]",
     },
@@ -89,10 +91,6 @@ const Dashboard = () => {
         <div className='h-full flex flex-1 flex-col justify-between'>
           <p className='text-base text-gray-600'>{label}</p>
           <span className='text-2xl font-semibold'>{count}</span>
-            {/* <span className="text-gray-500 px-4">{new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(product.price)}</span> */}
           <span className='text-sm text-gray-400'>{"last month"}</span>
         </div>
 
@@ -121,7 +119,7 @@ const TopSellingSlider = ({ products }) => (
           />
           <div className="text-center mt-2">
             <p className="font-semibold">{product.name}</p>
-            <p className="font-semibold">{product.price}</p>
+            <p className="font-semibold">{formatMoney(product.price)}</p>
             <p className="text-sm text-gray-500">{product.sold} sold</p>
           </div>
         </div>

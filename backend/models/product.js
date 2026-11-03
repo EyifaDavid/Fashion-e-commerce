@@ -15,6 +15,11 @@ const productSchema = new Schema({
   // [VTON] Optional dedicated garment shot for virtual try-on (a clean, front-facing image
   // works best). Falls back to images[0] when empty. See tryonController.resolveGarment.
   garmentImage: { type: String, default: "" },
+  // Optional dedicated images for the clothing rack: a front-facing shot and a
+  // side/angled shot. Both fall back to garmentImage / a CSS turn when empty.
+  rackSideImage: { type: String, default: "" },
+  rackFrontImage: { type: String, default: "" },
+  rackBackImage: { type: String, default: "" },
   // [VTON] Pre-generated "on-model" previews: the product's garment composited onto a fixed
   // reference model (one per gender), generated once and shown to every visitor by default.
   // Empty until generated; the product page falls back to images[0] when empty. These are

@@ -36,8 +36,6 @@ export const productApiSLice = apiSlice.injectEndpoints({
       invalidatesTags: ['Product'],
     }),
     // [VTON] Admin: (re)generate a product's pre-generated on-model preview(s).
-    // The backend responds 202 immediately and generates in the background, so the
-    // new image appears on a later refetch (a minute or two later), not in this response.
     generateProductPreview: builder.mutation({
       query: ({ id, force = false }) => ({
         url: `/products/${id}/generate-preview${force ? '?force=true' : ''}`,
@@ -46,8 +44,6 @@ export const productApiSLice = apiSlice.injectEndpoints({
       invalidatesTags: ['Product'],
     }),
     // [VTON] Admin: bulk-generate ALL missing on-model previews across the catalog.
-    // Backend responds 202 immediately with a queued count and runs sequentially
-    // in the background. Guarded against overlapping runs server-side.
     generateAllProductPreviews: builder.mutation({
       query: () => ({
         url: `${PRODUCT_URL}/bulk-generate-previews`,
@@ -55,8 +51,7 @@ export const productApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Product'],
     }),
-    // [VTON] Admin: poll the in-memory generation tracker. Shows per-product
-    // success/failure instead of a blind "refresh to see it".
+    // [VTON] Admin: poll the in-memory generation tracker.
     getPreviewStatus: builder.query({
       query: () => ({
         url: `${PRODUCT_URL}/previews/status`,
@@ -64,7 +59,6 @@ export const productApiSLice = apiSlice.injectEndpoints({
     }),
   }),
 });
-
 
 export const {
   useGetProductsQuery,

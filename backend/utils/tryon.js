@@ -18,8 +18,7 @@ async function generateTryOn() {
      const output = await replicate.run("flux-kontext-apps/multi-image-kontext", { input });
   await writeFile("output.png", output);
   } catch (error) {
-    console.log(process.env.REPLICATE_API_TOKEN)
-    console.error("❌ Error during try-on:", error);
+    console.error("❌ Error during try-on:", error?.message || error);
   }
 }
 

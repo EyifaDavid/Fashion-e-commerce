@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import { MdArrowBack, MdArrowForward, MdOutlineShoppingBag } from "react-icons/md";
@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { toast } from "sonner";
 import { useGetProductsQuery } from "../redux/slices/api/productApiSlice";
+// [NORTH] Shared cedi display and colour selections that open the product.
+import { formatMoney } from "../utils/money";
+import { colourName } from "../utils/colour";
 
 export default function ProductSlider({ title = "Featured"}) {
   const scrollRef = useRef(null);
@@ -14,7 +17,7 @@ export default function ProductSlider({ title = "Featured"}) {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
   const { data: response, isLoading, error } = useGetProductsQuery();
-  const products = response?.data || [];
+  const products = useMemo(() => response?.data || [], [response]);
   
   // const products = useSelector((state) => state.products.allProducts);
 
@@ -136,10 +139,7 @@ export default function ProductSlider({ title = "Featured"}) {
         <h3 className="mt-4 font-semibold block">{product.name}</h3>
         <div className="flex items-center">
           <span className="font-semibold">{product.noColors} colors</span>
-          <span className="text-gray-500 px-4">{new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(product.price)}</span>
+          <span className="text-gray-500 px-4">{formatMoney(product.price)}</span>
 
           {/* Shopping bag icon */}
           <span className="hidden group-hover:flex absolute right-8 transition-all duration-300">
@@ -153,18 +153,15 @@ export default function ProductSlider({ title = "Featured"}) {
       </div>
 
       {/* Color swatches */}
-      <div className="h-6 opacity-0 group-hover:opacity-100 mt-4 transition-all duration-300">
+      <div className="min-h-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 mt-4 transition-opacity duration-300">
         <div className="flex gap-2 mb-2">
           {product.colors?.slice(0, 4).map((color, index) => (
-            <div
+            <Link
               key={index}
-              className="w-4 h-4 rounded-full border cursor-pointer"
+              to={`/product/${product._id}`} state={{ selectedColor: color }}
+              aria-label={"View " + product.name + " in " + colourName(color)}
+              className="block w-6 h-6 rounded-full border cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4"
               style={{ backgroundColor: color }}
-              onClick={(e) => {
-                e.preventDefault(); // Prevent navigation if nested in a link
-                e.stopPropagation(); // Prevent hover/parent events if needed
-                console.log("Selected color:", color);
-              }}
             />
           ))}
         </div>

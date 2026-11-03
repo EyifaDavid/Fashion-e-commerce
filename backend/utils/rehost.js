@@ -16,6 +16,26 @@ import cloudinary from "./cloudinary.js";
 
 const REHOST_TIMEOUT_MS = 15_000; // guard against a slow HF file fetch
 
+// [RACK] Upload an in-memory image (e.g. the sharp-processed 800x1000 rack cutout)
+// to Cloudinary and return its durable secure_url. Same uploader path as rehost.
+export async function uploadBufferToCloudinary(buffer, folder = "rack-images", options = {}) {
+  const upload = (buf, opts) =>
+    new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(opts, (error, result) =>
+        error ? reject(error) : resolve(result)
+      );
+      stream.end(buf);
+    });
+
+  const result = await upload(buffer, {
+    folder,
+    resource_type: "image",
+    format: "png",
+    ...options,
+  });
+  return result.secure_url;
+}
+
 /**
  * @param {string} sourceUrl  The image URL to copy (e.g. an ephemeral HF result URL).
  * @param {string} [folder]   Cloudinary folder to store it in. Defaults to "tryon-results".

@@ -25,7 +25,7 @@ const UserAvatar = () => {
         dispatch(logout());
 
         navigate("/log-in");
-      }catch(error){
+      }catch{
         toast.error("Something went wrong");
       }
     };
@@ -33,31 +33,31 @@ const UserAvatar = () => {
 
   return (
    <>
-    <div className="flex justify-center">
+    <div className="flex items-center justify-center">
     <Menu as="div" className="relative inline-block text-left">
         <div>
-            <MenuButton className="flex justify-center">
-               <MdOutlinePerson size={18} className="hover:cursor-pointer"/>
+            <MenuButton className="north-icon-control" aria-label="Profile" title="Profile" data-north-header-action="profile">
+               <MdOutlinePerson size={22} aria-hidden="true" />
             </MenuButton>
         </div>
 
         <Transition
         as={Fragment}
         enter='transition ease-out duration-100'
-        enterFrom='transform opacity-0 scale-95'
-        enterTo='transform opacity-100 scale-100'
-        leave='transition ease-in duration-75'
-        leaveFrom='transform opacity-100 scale-100'
-        leaveTo='transform opacity-0 scale-95'
+        enterFrom='transform opacity-0 scale-95 motion-reduce:transform-none'
+        enterTo='transform opacity-100 scale-100 motion-reduce:transform-none'
+        leave='transition ease-out duration-100'
+        leaveFrom='transform opacity-100 scale-100 motion-reduce:transform-none'
+        leaveTo='transform opacity-0 scale-95 motion-reduce:transform-none'
       >
 
-        <MenuItems className='absolute right-0 mt-2 w-56 origin-top-right divide-gray-100 rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none'>
+        <MenuItems className='absolute right-0 z-40 mt-2 w-56 origin-top-right divide-gray-100 bg-white text-neutral-900 shadow-2xl ring-1 ring-black/5 focus:outline-none'>
           <div className='p-4'>
             <MenuItem>
-              {({ active }) => (
+              {({ focus }) => (
                 <button
                   onClick={() => setOpen(true)}
-                  className='text-gray-700 group flex w-full items-center rounded-md px-2 py-2 text-base'
+                  className={'text-gray-700 group flex w-full items-center px-2 py-2 text-base ' + (focus ? 'bg-neutral-100' : '')}
                 >
                   <FaUser className='mr-2' aria-hidden='true' />
                   Profile
@@ -66,10 +66,10 @@ const UserAvatar = () => {
             </MenuItem>
             
             <MenuItem>
-              {({ active }) => (
+              {({ focus }) => (
                 <button
                   onClick={() => setOpenPassword(true)}
-                  className={`text-gray-700 group flex w-full items-center rounded-md px-2 py-2 text-base`}
+                  className={'text-gray-700 group flex w-full items-center px-2 py-2 text-base ' + (focus ? 'bg-neutral-100' : '')}
                 >
                   <FaUserLock className='mr-2' aria-hidden='true' />
                   Change Password
@@ -78,10 +78,10 @@ const UserAvatar = () => {
             </MenuItem>
 
             <MenuItem>
-              {({ active }) => (
+              {({ focus }) => (
                 <button
                   onClick={logoutHandler}
-                  className={`text-red-600 group flex w-full items-center rounded-md px-2 py-2 text-base`}
+                  className={'text-red-600 group flex w-full items-center px-2 py-2 text-base ' + (focus ? 'bg-neutral-100' : '')}
                 >
                   <IoLogOutOutline className='mr-2' aria-hidden='true' />
                   Logout

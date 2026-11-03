@@ -7,6 +7,9 @@ import twos from "../assets/images/two4one.jpg";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { useGetProductsQuery } from "../redux/slices/api/productApiSlice";
 import { addToCart } from "../redux/slices/cartSlice";
+// [NORTH] Shared cedi display and usable colour swatches.
+import { formatMoney } from "../utils/money";
+import { colourName } from "../utils/colour";
 
 export default function SimilarProducts({ ads = [] }) {
   const {data:response, isLoading ,error}= useGetProductsQuery()
@@ -124,10 +127,7 @@ export default function SimilarProducts({ ads = [] }) {
                 <h3 className="mt-4 font-semibold text-lg">{item.name}</h3>
                 <div className="flex items-center">
                   <span className="font-semibold">{item.noColors} colors</span>
-                  <span className="text-gray-500 px-4">{new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(item.price)}</span>
+                  <span className="text-gray-500 px-4">{formatMoney(item.price)}</span>
 
                   {/* Shopping Bag Button */}
                   <span className="hidden group-hover:flex absolute right-8 transition-all duration-300">
@@ -141,18 +141,15 @@ export default function SimilarProducts({ ads = [] }) {
               </div>
 
               {/* Swatches */}
-              <div className="opacity-0 group-hover:opacity-100 mt-4 transition-opacity duration-50">
+              <div className="opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 mt-4 transition-opacity duration-50">
                 <div className="flex gap-2 mb-2">
                   {item.colors?.slice(0, 4).map((color, index) => (
-                    <div
+                    <Link
                       key={index}
-                      className="w-4 h-4 rounded-full border cursor-pointer"
+                      to={`/product/${item._id}`} state={{ selectedColor: color }}
+                      aria-label={"View " + item.name + " in " + colourName(color)}
+                      className="block w-6 h-6 rounded-full border cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4"
                       style={{ backgroundColor: color }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        console.log("Selected color:", color);
-                      }}
                     />
                   ))}
                 </div>

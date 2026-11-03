@@ -26,8 +26,6 @@ router.get('/previews/status', protectRoute, isAdminRoute, getPreviewStatus);
 // [VTON] Admin-only: (re)generate a product's pre-generated on-model preview(s).
 router.post('/:id/generate-preview', protectRoute, isAdminRoute, generateProductPreview);
 
-
-
 router.delete('/:id', protectRoute,isAdminRoute, deleteProduct);
 
 export default router
