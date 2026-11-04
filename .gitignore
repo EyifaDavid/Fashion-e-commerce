@@ -1,0 +1,33 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+dist-ssr/
+.vite/
+
+# Local configuration and logs
+.env
+.env.*
+!.env.example
+!.env.*.example
+logs/
+*.log
+.DS_Store
+Thumbs.db
+
+# Local Python environments and bytecode
+.venv*/
+__pycache__/
+*.py[cod]
+
+# Local video projects, exports, recording profiles and caches
+/brag-output*/
+/brag-capture-chrome/
+/VOICEOVER_HANDOFF.md
+.hyperframes/
+.thumbnails/
+.waveform-cache/
+
+# Generated repository dumps and local QA output
+/repomix-output.xml
+/frontend/artifacts/
+/frontend/fashion_e-commerce/
