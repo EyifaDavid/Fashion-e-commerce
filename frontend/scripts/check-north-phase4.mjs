@@ -102,7 +102,12 @@ const check = (name) => { report.checks.push(name); console.log("PASS " + name);
 const contextId = (await browser.send("Target.createBrowserContext")).browserContextId;
 const page = await newPage(contextId);
 const runtimeErrors = [];
+const tryonRequests = [];
 page.on("Runtime.exceptionThrown", ({ exceptionDetails }) => runtimeErrors.push(exceptionDetails.exception?.description || exceptionDetails.text));
+page.on("Network.requestWillBeSent", ({ request }) => {
+  if (request.url.includes("/api/tryon")) tryonRequests.push(request.url);
+});
+await page.send("Network.enable");
 await page.send("Page.addScriptToEvaluateOnNewDocument", { source: "localStorage.setItem('userInfo', JSON.stringify({name:'Preview',email:'preview@example.invalid',isAdmin:false}));" });
 const openHome = async () => {
   await page.send("Page.navigate", { url: origin + "/Landing" });
@@ -190,10 +195,25 @@ try {
   check("Product details show cedis, retain a clearly selected colour and switch the main image via thumbnails");
   await screenshot(page, "product-desktop");
   report.screenshots.push("product-desktop.png");
-  assert.equal(await evaluate(page, "Boolean(document.querySelector('.north-product-tryon button'))"), true);
+  assert.equal(await evaluate(page, "document.querySelectorAll('.north-product-tryon button').length"), 1);
+  assert.equal(await evaluate(page, "document.querySelector('.north-product-tryon button').textContent.trim()"), "Try it on");
+  assert.equal(await evaluate(page, "document.querySelector('.north-product-tryon input[type=file]')"), null);
+  const productLd = await evaluate(page, `(async () => {
+    const nodes = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
+    const parsed = nodes.map((node) => { try { return JSON.parse(node.textContent); } catch { return null; } });
+    const ld = parsed.find((entry) => entry && entry["@type"] === "Product");
+    if (!ld) return { found: false };
+    const response = await fetch('/api/products/' + ${JSON.stringify(id)}, { credentials: 'include' });
+    const body = await response.json();
+    const source = body.data || {};
+    return { found: true, image: ld.image, url: ld.url, expected: source.garmentImage || source.images?.[0] };
+  })()`);
+  assert.equal(productLd.found, true);
+  assert.equal(productLd.image, productLd.expected);
+  assert.deepEqual(tryonRequests, []);
   await clickText(page, "M");
   assert.equal(await evaluate(page, "Array.from(document.querySelectorAll('.north-option-list button')).find(b => b.textContent.trim() === 'M').getAttribute('aria-pressed')"), "true");
-  check("Product size options and virtual try-on remain available");
+  check("Product size options and live try-on launch remain available");
   await viewport(page, 768, 1024);
   await screenshot(page, "product-tablet");
   assert.equal(await evaluate(page, "document.documentElement.scrollWidth <= innerWidth"), true);

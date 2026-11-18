@@ -77,8 +77,23 @@ function ProductDetails({ id, initialColor }) {
   </div>;
   if (!product) return <div className="north-page north-section"><p>Product not found.</p><Link to="/shop">Back to the collection</Link></div>;
 
+  // Anywear reads Product JSON-LD to pick the garment image. Prefer the dedicated
+  // garment shot so it never latches onto a model/lifestyle photo.
+  const garmentUrl = product.garmentImage || product.images?.[0];
+  const distinctGenders = [...new Set((product.genders || []).map((g) => String(g).toLowerCase()))];
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: garmentUrl,
+    url: window.location.href,
+  };
+
   return (
     <div className="north-page">
+      <script type="application/ld+json">
+        {JSON.stringify(productJsonLd)}
+      </script>
       <div className="north-product-page">
         <nav className="north-product-breadcrumbs" aria-label="Breadcrumb">
           <Link to="/shop">Collection</Link><span aria-hidden="true">/</span><span>{product.name}</span>
@@ -131,7 +146,14 @@ function ProductDetails({ id, initialColor }) {
             </div>
             <p role="status" className="sr-only">{status === "added" ? "Added to cart" : status === "loading" ? "Adding to cart" : ""}</p>
             <div className="north-product-tryon">
-              <TryOnButton productId={product._id} productName={product.name} canTryOn={Boolean(product.garmentImage || product.images?.[0])} />
+              <TryOnButton
+                productId={product._id}
+                productName={product.name}
+                canTryOn={Boolean(garmentUrl)}
+                garmentUrl={garmentUrl}
+                garmentCategory={product.category}
+                garmentGender={distinctGenders.length === 1 ? distinctGenders[0] : ""}
+              />
             </div>
           </div>
         </div>

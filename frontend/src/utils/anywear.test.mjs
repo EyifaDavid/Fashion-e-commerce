@@ -99,7 +99,7 @@ test("ensureAnywear injects the official script once and initializes DecartWidge
   assert.equal(fake.win.config.showPill, false);
   assert.equal(fake.win.config.isProductPage(), true);
   assert.match(fake.win.config.widgetUrl, /\/widget\.html$/);
-  assert.equal(fake.win.config.getGarmentMeta, getGarmentMeta);
+  assert.deepEqual(fake.win.config.getGarmentMeta(), getGarmentMeta());
 });
 
 test("ensureAnywear reuses the initialized widget on a second call", async () => {
@@ -119,4 +119,11 @@ test("openAnywear passes openOptions to the initialized widget", async () => {
   const openOptions = { mobileCamera: "user" };
   await openAnywear({ domain: "store.test", timeoutMs: 30, doc, win, openOptions });
   assert.deepEqual(win.openOptions, openOptions);
+});
+
+test("getGarmentMeta follows the most recently opened product", async () => {
+  const { doc, win } = sharedFake;
+  const nextMeta = { category: "dress", gender: "Female", categoryRaw: "Dresses" };
+  await ensureAnywear({ domain: "store.test", timeoutMs: 30, doc, win, getGarmentMeta: () => nextMeta });
+  assert.deepEqual(win.config.getGarmentMeta(), nextMeta);
 });

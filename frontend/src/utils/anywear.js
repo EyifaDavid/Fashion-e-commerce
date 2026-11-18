@@ -4,6 +4,7 @@ const LOAD_ERROR = "Live try-on couldn't load. Please try again in a moment.";
 let readyPromise = null;
 let readyWidget = null;
 let initDone = false;
+let activeGetGarmentMeta = null;
 
 export function buildAnywearScriptUrl(domain) {
   return `${ANYWEAR_BASE}/anywear.js?domain=${encodeURIComponent(String(domain))}`;
@@ -59,7 +60,9 @@ function loadAnywear({ domain, getGarmentMeta, timeoutMs = 10000, doc, win }) {
           showPill: false,
           isProductPage: () => true,
         };
-        if (typeof getGarmentMeta === "function") config.getGarmentMeta = getGarmentMeta;
+        if (typeof activeGetGarmentMeta === "function") {
+          config.getGarmentMeta = () => activeGetGarmentMeta();
+        }
         widget.init(config);
         initDone = true;
       }
@@ -85,6 +88,9 @@ function loadAnywear({ domain, getGarmentMeta, timeoutMs = 10000, doc, win }) {
 }
 
 export function ensureAnywear(options = {}) {
+  if (typeof options.getGarmentMeta === "function") {
+    activeGetGarmentMeta = options.getGarmentMeta;
+  }
   if (initDone && readyWidget) return Promise.resolve(readyWidget);
   if (readyPromise) return readyPromise;
 
