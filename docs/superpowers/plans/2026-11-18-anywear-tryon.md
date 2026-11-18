@@ -106,7 +106,7 @@ Pass `garmentUrl={product.garmentImage || product.images?.[0]}` to `TryOnButton`
 
 - [ ] **Step 5: Set the domain env**
 
-Add `VITE_ANYWEAR_DOMAIN=fashion-e-commerce-aqgt.onrender.com` to `frontend/.env` (keep existing lines unchanged).
+Add `VITE_ANYWEAR_DOMAIN=mavraudercollections.netlify.app` to `frontend/.env` (keep existing lines unchanged). This is the storefront origin (Netlify), not the backend API host on Render - the live bundle at `mavraudercollections.netlify.app` hardcodes `https://fashion-e-commerce-aqgt.onrender.com/api` as its API base, and Render's root returns 404.
 
 - [ ] **Step 6: Run the smoke script to verify it passes**
 
