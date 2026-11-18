@@ -4,7 +4,6 @@ import {apiSlice} from "./slices/apiSlice"
 import cartReducer from './slices/cartSlice';
 import productReducer from './slices/productSlice'
 import userReducer from './slices/userSlice'
-import tryonReducer from './slices/tryonSlice'
 
 
 const store = configureStore({
@@ -14,7 +13,6 @@ const store = configureStore({
         cart: cartReducer,
         products: productReducer,
         users: userReducer,
-        tryon: tryonReducer,
     },
     middleware: (getDefaultMiddleware)=> getDefaultMiddleware().concat(apiSlice.middleware),
     devTools:true,
